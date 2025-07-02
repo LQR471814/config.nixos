@@ -91,10 +91,13 @@
     packages = with pkgs; [
       nerd-fonts.jetbrains-mono
       source-han-serif-vf-ttf
+      ibm-plex
     ];
     fontconfig = {
       enable = true;
       defaultFonts = {
+        sansSerif = [ "IBM Plex Sans" ];
+        serif = [ "IBM Plex Serif" ];
         monospace = [ "JetBrainsMono NF" ];
       };
     };
