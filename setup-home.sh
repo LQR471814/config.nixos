@@ -28,8 +28,3 @@ git clone https://github.com/LQR471814/config.nivm ~/.config/nvim
 
 # install nvim deps
 nvim
-
-# setup GPG key pair
-gpg --gen-key
-chmod 700 ~/.gnupg
-pass init <USER ID provided>
