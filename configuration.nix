@@ -81,7 +81,7 @@
     bc
     gnumake
     git
-    nslookup
+    busybox
 
     # core gui apps
     alacritty
@@ -97,9 +97,9 @@
     fontconfig = {
       enable = true;
       defaultFonts = {
-        sansSerif = [ "IBM Plex Sans" ];
-        serif = [ "IBM Plex Serif" ];
-        monospace = [ "JetBrainsMono NF" ];
+        sansSerif = [ "IBM Plex Sans" "Source Han Serif SC VF" ];
+        serif = [ "IBM Plex Serif" "Source Han Serif SC VF" ];
+        monospace = [ "JetBrainsMono NF" "Source Han Serif SC VF" ];
       };
     };
   };
@@ -130,19 +130,21 @@
     settings = {
       default_session = {
         user = "greeter";
-	command = ''
-	  ${pkgs.greetd.tuigreet}/bin/tuigreet \
-	    --time \
-	    --asterisks \
-	    --user-menu \
-	    --cmd "env -u WAYLAND_DISPLAY river"
-	'';
+	      command = ''
+	        ${pkgs.greetd.tuigreet}/bin/tuigreet \
+	          --time \
+	          --asterisks \
+	          --user-menu \
+	          --cmd "env -u WAYLAND_DISPLAY river"
+	      '';
       };
     };
   };
 
   # shell
   programs.zsh = import ./zsh.nix { inherit pkgs; };
+
+  programs.nix-ld.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
