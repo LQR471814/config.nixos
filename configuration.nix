@@ -81,6 +81,7 @@
     bc
     gnumake
     git
+    nslookup
 
     # core gui apps
     alacritty
