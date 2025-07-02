@@ -64,6 +64,7 @@
     (import ./overlays.nix)
   ];
 
+
   environment.systemPackages = with pkgs; [
     # wm
     river
@@ -73,6 +74,7 @@
     tofi
     upower
     light
+    papirus-icon-theme
 
     # basic utils
     neovim
@@ -141,9 +143,11 @@
     };
   };
 
+  programs.dconf.enable = true;
+  services.xserver.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
+
   # shell
   programs.zsh = import ./zsh.nix { inherit pkgs; };
-
   programs.nix-ld.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
