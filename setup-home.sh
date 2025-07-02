@@ -31,4 +31,5 @@ nvim
 
 # setup GPG key pair
 gpg --gen-key
+chmod 700 ~/.gnupg
 pass init <USER ID provided>
