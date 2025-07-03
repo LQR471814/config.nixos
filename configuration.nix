@@ -76,6 +76,7 @@
     light
     papirus-icon-theme
     grim
+    slurp
 
     # basic utils
     neovim
@@ -145,7 +146,7 @@
   };
 
   programs.dconf.enable = true;
-  services.xserver.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
+  programs.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
 
   # shell
   programs.zsh = import ./zsh.nix { inherit pkgs; };
