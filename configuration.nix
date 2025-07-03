@@ -101,7 +101,7 @@
       defaultFonts = {
         sansSerif = [ "IBM Plex Sans" "Source Han Serif SC VF" ];
         serif = [ "IBM Plex Serif" "Source Han Serif SC VF" ];
-        monospace = [ "JetBrainsMono NF" "Source Han Serif SC VF" ];
+        monospace = [ "IBM Plex Mono" "JetBrainsMono NF" "Source Han Serif SC VF" ];
       };
     };
   };
