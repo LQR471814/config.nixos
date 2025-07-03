@@ -75,6 +75,7 @@
     upower
     light
     papirus-icon-theme
+    grim
 
     # basic utils
     neovim
