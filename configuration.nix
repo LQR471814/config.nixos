@@ -2,24 +2,50 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   # drivers and hardware
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # systemd-boot EFI boot loader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # power
+  services.tlp = {
+    enable = true;
+    settings = {
+      TLP_ENABLE = 1;
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      START_CHARGE_THRESH_BAT0 = 40;
+      STOP_CHARGE_THRESH_BAT0 = 80;
+    };
+  };
+
   # networking
   networking.hostName = "lqr471814-laptop"; # Define your hostname.
   networking.networkmanager.enable = true;
   networking.networkmanager.dns = "none";
-  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+  networking.nameservers = [
+    "1.1.1.1"
+    "8.8.8.8"
+  ];
+
+  # temporarily disable ipv6
+  boot.kernel.sysctl = {
+    "net.ipv6.conf.all.disable_ipv6" = 1;
+    "net.ipv6.conf.default.disable_ipv6" = 1;
+  };
 
   # time zone.
   time.timeZone = "Asia/Shanghai";
@@ -46,13 +72,20 @@
   services.libinput.enable = true;
 
   # user accounts
+  users.groups.wireshark = {};
   users.users = {
     tun2socks = {
       isNormalUser = true;
     };
     lqr471814 = {
       isNormalUser = true;
-      extraGroups = [ "seat" "wheel" "video" "sandbar" ]; # enable sudo for user
+      extraGroups = [
+        "seat"
+        "wheel"
+        "video"
+        "sandbar"
+        "wireshark"
+      ]; # enable sudo for user
       shell = pkgs.zsh;
     };
   };
@@ -63,7 +96,6 @@
   nixpkgs.overlays = [
     (import ./overlays.nix)
   ];
-
 
   environment.systemPackages = with pkgs; [
     # wm
@@ -89,6 +121,7 @@
 
     # core gui apps
     alacritty
+    wireshark
   ];
 
   fonts = {
@@ -101,9 +134,19 @@
     fontconfig = {
       enable = true;
       defaultFonts = {
-        sansSerif = [ "IBM Plex Sans" "Source Han Serif SC VF" ];
-        serif = [ "IBM Plex Serif" "Source Han Serif SC VF" ];
-        monospace = [ "IBM Plex Mono" "JetBrainsMono NF" "Source Han Serif SC VF" ];
+        sansSerif = [
+          "IBM Plex Sans"
+          "Source Han Serif SC VF"
+        ];
+        serif = [
+          "IBM Plex Serif"
+          "Source Han Serif SC VF"
+        ];
+        monospace = [
+          "IBM Plex Mono"
+          "JetBrainsMono NF"
+          "Source Han Serif SC VF"
+        ];
       };
     };
   };
@@ -134,13 +177,13 @@
     settings = {
       default_session = {
         user = "greeter";
-	      command = ''
-	        ${pkgs.greetd.tuigreet}/bin/tuigreet \
-	          --time \
-	          --asterisks \
-	          --user-menu \
-	          --cmd "env -u WAYLAND_DISPLAY river"
-	      '';
+        command = ''
+          	        ${pkgs.greetd.tuigreet}/bin/tuigreet \
+          	          --time \
+          	          --asterisks \
+          	          --user-menu \
+          	          --cmd "env -u WAYLAND_DISPLAY river"
+          	      '';
       };
     };
   };
@@ -196,4 +239,3 @@
   system.stateVersion = "25.05"; # Did you read the comment?
 
 }
-
