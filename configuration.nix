@@ -157,6 +157,7 @@
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
     WAYLAND_DISPLAY = "wayland-1";
+    ZSH_SYSTEM_CLIPBOARD_USE_WL_CLIPBOARD = "";
   };
 
   services.seatd.enable = true;
