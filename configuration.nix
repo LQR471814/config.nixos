@@ -109,6 +109,7 @@
     papirus-icon-theme
     grim
     slurp
+    lswt
 
     # basic utils
     neovim
