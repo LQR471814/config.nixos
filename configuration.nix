@@ -119,6 +119,7 @@
     gnumake
     git
     busybox
+    wireguard-tools
 
     # core gui apps
     alacritty
