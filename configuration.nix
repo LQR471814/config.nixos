@@ -51,7 +51,7 @@
   };
 
   # time zone.
-  time.timeZone = "Europe/Zurich";
+  time.timeZone = "Europe/Madrid";
 
   # language
   i18n.defaultLocale = "en_US.UTF-8";
