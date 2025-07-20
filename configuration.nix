@@ -16,6 +16,9 @@
     ./hardware-configuration.nix
   ];
 
+  # use latest kernel
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   # systemd-boot EFI boot loader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
