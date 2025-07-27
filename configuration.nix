@@ -9,6 +9,9 @@
   ...
 }:
 
+let
+  IS_DESKTOP = builtins.pathExists ./DESKTOP;
+in
 {
   # drivers and hardware
   imports = [
@@ -26,17 +29,26 @@
   # power
   services.tlp = {
     enable = true;
-    settings = {
-      TLP_ENABLE = 1;
-      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-      CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      START_CHARGE_THRESH_BAT0 = 40;
-      STOP_CHARGE_THRESH_BAT0 = 80;
-    };
+    settings =
+      {
+        TLP_ENABLE = 1;
+      }
+      // (
+        if IS_DESKTOP then
+          { }
+        else
+          {
+            CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+            CPU_SCALING_GOVERNOR_ON_AC = "performance";
+            START_CHARGE_THRESH_BAT0 = 40;
+            STOP_CHARGE_THRESH_BAT0 = 80;
+          }
+      );
+
   };
 
   # networking
-  networking.hostName = "lqr471814-laptop"; # Define your hostname.
+  networking.hostName = if IS_DESKTOP then "lqr471814-desktop" else "lqr471814-laptop"; # Define your hostname.
   networking.networkmanager.enable = true;
   networking.networkmanager.dns = "none";
   networking.nameservers = [
@@ -45,13 +57,13 @@
   ];
 
   # temporarily disable ipv6
-  boot.kernel.sysctl = {
-    "net.ipv6.conf.all.disable_ipv6" = 0;
-    "net.ipv6.conf.default.disable_ipv6" = 0;
-  };
+  # boot.kernel.sysctl = {
+  #   "net.ipv6.conf.all.disable_ipv6" = 0;
+  #   "net.ipv6.conf.default.disable_ipv6" = 0;
+  # };
 
   # time zone.
-  time.timeZone = "Europe/Madrid";
+  time.timeZone = "America/Los_Angeles";
 
   # language
   i18n.defaultLocale = "en_US.UTF-8";
@@ -75,7 +87,7 @@
   services.libinput.enable = true;
 
   # user accounts
-  users.groups.wireshark = {};
+  users.groups.wireshark = { };
   users.users = {
     tun2socks = {
       isNormalUser = true;
@@ -184,12 +196,12 @@
       default_session = {
         user = "greeter";
         command = ''
-          	        ${pkgs.greetd.tuigreet}/bin/tuigreet \
-          	          --time \
-          	          --asterisks \
-          	          --user-menu \
-          	          --cmd "env -u WAYLAND_DISPLAY river"
-          	      '';
+          ${pkgs.greetd.tuigreet}/bin/tuigreet \
+            --time \
+            --asterisks \
+            --user-menu \
+            --cmd "env -u WAYLAND_DISPLAY river"
+        '';
       };
     };
   };
