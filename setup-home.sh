@@ -20,9 +20,12 @@ git clone https://github.com/LQR471814/config.home-manager ~/.config/home-manage
 cd ~/.config/home-manager
 make
 
-# pull syncthing secrets & reconfigure syncthing
+# setup various misc. applications after installing core utils
 rm -rf ~/.local/state/syncthing
 syncthing-cfg-pull
+thunderbird # run to setup initial profile
+
+# reconfigure syncthing and thunderbird
 cd ~/.config/home-manager && make
 
 # setup nvim config
@@ -30,3 +33,5 @@ git clone https://github.com/LQR471814/config.nivm ~/.config/nvim
 
 # install nvim deps
 nvim
+
+# automatically configure firefox and thunderbird somehow?
