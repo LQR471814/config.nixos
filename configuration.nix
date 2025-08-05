@@ -50,11 +50,19 @@ in
   # networking
   networking.hostName = if IS_DESKTOP then "lqr471814-desktop" else "lqr471814-laptop"; # Define your hostname.
   networking.networkmanager.enable = true;
-  networking.networkmanager.dns = "none";
   networking.nameservers = [
-    "1.1.1.1"
-    "8.8.8.8"
+    "192.168.1.10"
   ];
+  services.resolved = {
+    enable = true;
+    dnssec = "false";
+    dnsovertls = "false";
+    fallbackDns = [
+      "1.1.1.1"
+      "8.8.8.8"
+    ];
+    domains = [ "~." ];
+  };
 
   # temporarily disable ipv6
   # boot.kernel.sysctl = {
