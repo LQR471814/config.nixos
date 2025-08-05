@@ -216,6 +216,7 @@ in
 
   programs.dconf.enable = true;
   programs.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
+  security.pam.services.swaylock = { };
 
   # shell
   programs.zsh = import ./zsh.nix { inherit pkgs; };
