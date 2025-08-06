@@ -241,6 +241,11 @@ in
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
+  # local certificate
+  security.pki.certificateFiles = [
+    ./caddy_local_root.crt
+  ];
+
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
   # accidentally delete configuration.nix.
