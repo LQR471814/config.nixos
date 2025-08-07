@@ -176,7 +176,7 @@ in
     };
   };
 
-  # wayland
+  # desktop environment
   hardware.graphics.enable = true;
 
   environment.sessionVariables = {
@@ -217,6 +217,7 @@ in
   programs.dconf.enable = true;
   programs.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
   security.pam.services.swaylock = { };
+  programs.seahorse.enable = true;
 
   # shell
   programs.zsh = import ./zsh.nix { inherit pkgs; };
