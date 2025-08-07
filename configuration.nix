@@ -217,6 +217,8 @@ in
   programs.dconf.enable = true;
   programs.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
   security.pam.services.swaylock = { };
+  security.pam.services.greetd.enableGnomeKeyring = true;
+  services.gnome.gnome-keyring.enable = true;
   programs.seahorse.enable = true;
 
   # shell
