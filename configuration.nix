@@ -107,7 +107,7 @@ in
         "sandbar"
         "wireshark"
       ]; # enable sudo for user
-      shell = pkgs.zsh;
+      shell = pkgs.fish;
     };
   };
 
@@ -124,6 +124,7 @@ in
     sandbar
     wlr-randr
     wl-clipboard
+    clipman
     tofi
     upower
     light
@@ -220,7 +221,12 @@ in
   programs.seahorse.enable = true;
 
   # shell
-  programs.zsh = import ./zsh.nix { inherit pkgs; };
+  programs.fish = {
+    enable = true;
+    interactiveShellInit = ''
+      set -g fish_key_bindings fish_vi_key_bindings
+    '';
+  };
   programs.nix-ld.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
