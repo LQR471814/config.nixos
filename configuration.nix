@@ -57,7 +57,8 @@ in
     extraConfig = ''
       [Resolve]
       DNS=192.168.1.10
-      Domains=~nextcloud.home
+      FallbackDNS=1.1.1.1 8.8.8.8
+      Domains=~.
     '';
   };
 
