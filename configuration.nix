@@ -50,15 +50,15 @@ in
   # networking
   networking.hostName = if IS_DESKTOP then "lqr471814-desktop" else "lqr471814-laptop"; # Define your hostname.
   networking.networkmanager.enable = true;
-  networking.nameservers = [
-    "1.1.1.1"
-    "8.8.8.8"
-  ];
   services.resolved = {
     enable = true;
     dnssec = "false";
     dnsovertls = "false";
-    domains = [ "~." ];
+    extraConfig = ''
+      [Resolve]
+      DNS=192.168.1.10
+      Domains=~nextcloud.home
+    '';
   };
 
   # temporarily disable ipv6
