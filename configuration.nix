@@ -58,7 +58,6 @@ in
       [Resolve]
       DNS=
       FallbackDNS=192.168.1.10
-      Domains=~.
     '';
   };
 
