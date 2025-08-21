@@ -56,8 +56,8 @@ in
     dnsovertls = "false";
     extraConfig = ''
       [Resolve]
-      DNS=192.168.1.10
-      FallbackDNS=1.1.1.1 8.8.8.8
+      DNS=
+      FallbackDNS=192.168.1.10
       Domains=~.
     '';
   };
