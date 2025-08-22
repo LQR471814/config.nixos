@@ -294,6 +294,8 @@ lib.attrsets.recursiveUpdate
           address = "192.168.1.254";
           interface = "enp4s0";
         };
+        networking.firewall.allowedTCPPorts = [ 2049 53317 ];
+        networking.firewall.allowedUDPPorts = [ 2049 53317 ];
       }
     else
       {
