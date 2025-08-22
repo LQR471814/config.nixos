@@ -12,268 +12,301 @@
 let
   IS_DESKTOP = builtins.pathExists ./DESKTOP;
 in
-{
-  # drivers and hardware
-  imports = [
-    # Include the results of the hardware scan.
-    ./hardware-configuration.nix
-  ];
-
-  # use latest kernel
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  # systemd-boot EFI boot loader
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  # power
-  services.tlp = {
-    enable = true;
-    settings =
-      {
-        TLP_ENABLE = 1;
-      }
-      // (
-        if IS_DESKTOP then
-          { }
-        else
-          {
-            CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-            CPU_SCALING_GOVERNOR_ON_AC = "performance";
-            START_CHARGE_THRESH_BAT0 = 40;
-            STOP_CHARGE_THRESH_BAT0 = 80;
-          }
-      );
-
-  };
-
-  # networking
-  networking.hostName = if IS_DESKTOP then "lqr471814-desktop" else "lqr471814-laptop"; # Define your hostname.
-  networking.networkmanager.enable = true;
-  services.resolved = {
-    enable = true;
-    dnssec = "false";
-    dnsovertls = "false";
-    extraConfig = ''
-      [Resolve]
-      DNS=
-      FallbackDNS=192.168.1.10
-    '';
-  };
-
-  # temporarily disable ipv6
-  # boot.kernel.sysctl = {
-  #   "net.ipv6.conf.all.disable_ipv6" = 0;
-  #   "net.ipv6.conf.default.disable_ipv6" = 0;
-  # };
-
-  # time zone.
-  time.timeZone = "America/Los_Angeles";
-
-  # language
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  # printing
-  services.printing.enable = true;
-
-  # audio
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    jack.enable = true;
-    pulse.enable = true;
-    wireplumber.enable = true;
-  };
-  services.pulseaudio.enable = false;
-
-  # inputs
-  services.libinput.enable = true;
-
-  # user accounts
-  users.groups.wireshark = { };
-  users.users = {
-    tun2socks = {
-      isNormalUser = true;
-    };
-    lqr471814 = {
-      isNormalUser = true;
-      extraGroups = [
-        "seat"
-        "wheel"
-        "video"
-        "sandbar"
-        "wireshark"
-      ]; # enable sudo for user
-      shell = pkgs.fish;
-    };
-  };
-
-  # programs and packages
-
-  # packages installed in system profile
-  nixpkgs.overlays = [
-    (import ./overlays.nix)
-  ];
-
-  environment.systemPackages = with pkgs; [
-    # wm
-    river
-    sandbar
-    wlr-randr
-    wl-clipboard
-    clipman
-    tofi
-    upower
-    light
-    papirus-icon-theme
-    grim
-    slurp
-    lswt
-
-    # basic utils
-    neovim
-    curl
-    home-manager
-    bc
-    gnumake
-    git
-    busybox
-    wireguard-tools
-
-    # core gui apps
-    alacritty
-    wireshark
-  ];
-
-  fonts = {
-    enableDefaultPackages = true;
-    packages = with pkgs; [
-      nerd-fonts.jetbrains-mono
-      source-han-serif-vf-ttf
-      ibm-plex
+lib.attrsets.recursiveUpdate
+  {
+    # drivers and hardware
+    imports = [
+      # Include the results of the hardware scan.
+      ./hardware-configuration.nix
     ];
-    fontconfig = {
+
+    # use latest kernel
+    boot.kernelPackages = pkgs.linuxPackages_latest;
+
+    # systemd-boot EFI boot loader
+    boot.loader.systemd-boot.enable = true;
+    boot.loader.efi.canTouchEfiVariables = true;
+
+    # power
+    services.tlp.enable = true;
+
+    # networking
+    networking.networkmanager.enable = true;
+    services.resolved = {
       enable = true;
-      defaultFonts = {
-        sansSerif = [
-          "IBM Plex Sans"
-          "Source Han Serif SC VF"
-        ];
-        serif = [
-          "IBM Plex Serif"
-          "Source Han Serif SC VF"
-        ];
-        monospace = [
-          "IBM Plex Mono"
-          "JetBrainsMono NF"
-          "Source Han Serif SC VF"
-        ];
+      dnssec = "false";
+      dnsovertls = "false";
+      extraConfig = ''
+        [Resolve]
+        DNS=
+        FallbackDNS=192.168.1.10
+      '';
+    };
+
+    # temporarily disable ipv6
+    # boot.kernel.sysctl = {
+    #   "net.ipv6.conf.all.disable_ipv6" = 0;
+    #   "net.ipv6.conf.default.disable_ipv6" = 0;
+    # };
+
+    # time zone.
+    time.timeZone = "America/Los_Angeles";
+
+    # language
+    i18n.defaultLocale = "en_US.UTF-8";
+
+    # printing
+    services.printing.enable = true;
+
+    # audio
+    security.rtkit.enable = true;
+    services.pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      jack.enable = true;
+      pulse.enable = true;
+      wireplumber.enable = true;
+    };
+    services.pulseaudio.enable = false;
+
+    # inputs
+    services.libinput.enable = true;
+
+    # user accounts
+    users.groups.wireshark = { };
+    users.users = {
+      tun2socks = {
+        isNormalUser = true;
+      };
+      lqr471814 = {
+        isNormalUser = true;
+        extraGroups = [
+          "seat"
+          "wheel"
+          "video"
+          "sandbar"
+          "wireshark"
+        ]; # enable sudo for user
+        shell = pkgs.fish;
       };
     };
-  };
 
-  # desktop environment
-  hardware.graphics.enable = true;
+    # programs and packages
 
-  environment.sessionVariables = {
-    NIXOS_OZONE_WL = "1";
-    WAYLAND_DISPLAY = "wayland-1";
-    ZSH_SYSTEM_CLIPBOARD_USE_WL_CLIPBOARD = "";
-  };
+    # packages installed in system profile
+    nixpkgs.overlays = [
+      (import ./overlays.nix)
+    ];
 
-  services.seatd.enable = true;
-  services.upower.enable = true;
+    environment.systemPackages = with pkgs; [
+      # wm
+      river
+      sandbar
+      wlr-randr
+      wl-clipboard
+      clipman
+      tofi
+      upower
+      light
+      papirus-icon-theme
+      grim
+      slurp
+      lswt
 
-  systemd.services.clear-river-flag = {
-    description = "clears /tmp/RIVER_ON";
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "/run/current-system/sw/bin/rm -f /tmp/RIVER_ON";
-    };
-  };
+      # basic utils
+      neovim
+      curl
+      home-manager
+      bc
+      gnumake
+      git
+      busybox
+      wireguard-tools
 
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        user = "greeter";
-        command = ''
-          ${pkgs.greetd.tuigreet}/bin/tuigreet \
-            --time \
-            --asterisks \
-            --user-menu \
-            --cmd "env -u WAYLAND_DISPLAY river"
-        '';
+      # core gui apps
+      alacritty
+      wireshark
+    ];
+
+    fonts = {
+      enableDefaultPackages = true;
+      packages = with pkgs; [
+        nerd-fonts.jetbrains-mono
+        source-han-serif-vf-ttf
+        ibm-plex
+      ];
+      fontconfig = {
+        enable = true;
+        defaultFonts = {
+          sansSerif = [
+            "IBM Plex Sans"
+            "Source Han Serif SC VF"
+          ];
+          serif = [
+            "IBM Plex Serif"
+            "Source Han Serif SC VF"
+          ];
+          monospace = [
+            "IBM Plex Mono"
+            "JetBrainsMono NF"
+            "Source Han Serif SC VF"
+          ];
+        };
       };
     };
-  };
 
-  programs.dconf.enable = true;
-  programs.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
-  security.pam.services.swaylock = { };
-  security.pam.services.greetd.enableGnomeKeyring = true;
-  services.gnome.gnome-keyring.enable = true;
-  programs.seahorse.enable = true;
+    # desktop environment
+    hardware.graphics.enable = true;
 
-  # shell
-  programs.fish = {
-    enable = true;
-    interactiveShellInit = ''
-      set -g fish_key_bindings fish_vi_key_bindings
-    '';
-  };
-  programs.nix-ld.enable = true;
+    environment.sessionVariables = {
+      NIXOS_OZONE_WL = "1";
+      WAYLAND_DISPLAY = "wayland-1";
+      ZSH_SYSTEM_CLIPBOARD_USE_WL_CLIPBOARD = "";
+    };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
+    services.seatd.enable = true;
+    services.upower.enable = true;
 
-  # List services that you want to enable:
+    systemd.services.clear-river-flag = {
+      description = "clears /tmp/RIVER_ON";
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "/run/current-system/sw/bin/rm -f /tmp/RIVER_ON";
+      };
+    };
 
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
+    services.greetd = {
+      enable = true;
+      settings = {
+        default_session = {
+          user = "greeter";
+          command = ''
+            ${pkgs.greetd.tuigreet}/bin/tuigreet \
+              --time \
+              --asterisks \
+              --user-menu \
+              --cmd "env -u WAYLAND_DISPLAY river"
+          '';
+        };
+      };
+    };
 
-  # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 53317 ];
-  networking.firewall.allowedUDPPorts = [ 53317 ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+    programs.dconf.enable = true;
+    programs.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
+    security.pam.services.swaylock = { };
+    security.pam.services.greetd.enableGnomeKeyring = true;
+    services.gnome.gnome-keyring.enable = true;
+    programs.seahorse.enable = true;
 
-  # local certificate
-  security.pki.certificateFiles = [
-    ./caddy_local_root.crt
-  ];
+    # shell
+    programs.fish = {
+      enable = true;
+      interactiveShellInit = ''
+        set -g fish_key_bindings fish_vi_key_bindings
+      '';
+    };
+    programs.nix-ld.enable = true;
 
-  # Copy the NixOS configuration file and link it from the resulting system
-  # (/run/current-system/configuration.nix). This is useful in case you
-  # accidentally delete configuration.nix.
-  # system.copySystemConfiguration = true;
+    # Some programs need SUID wrappers, can be configured further or are
+    # started in user sessions.
+    # programs.mtr.enable = true;
+    # programs.gnupg.agent = {
+    #   enable = true;
+    #   enableSSHSupport = true;
+    # };
 
-  # This option defines the first version of NixOS you have installed on this particular machine,
-  # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
-  #
-  # Most users should NEVER change this value after the initial install, for any reason,
-  # even if you've upgraded your system to a new NixOS release.
-  #
-  # This value does NOT affect the Nixpkgs version your packages and OS are pulled from,
-  # so changing it will NOT upgrade your system - see https://nixos.org/manual/nixos/stable/#sec-upgrading for how
-  # to actually do that.
-  #
-  # This value being lower than the current NixOS release does NOT mean your system is
-  # out of date, out of support, or vulnerable.
-  #
-  # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
-  # and migrated your data accordingly.
-  #
-  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
-  system.stateVersion = "25.05"; # Did you read the comment?
+    # List services that you want to enable:
 
-}
+    # Enable the OpenSSH daemon.
+    # services.openssh.enable = true;
+
+    # Open ports in the firewall.
+    networking.firewall.allowedTCPPorts = [ 53317 ];
+    networking.firewall.allowedUDPPorts = [ 53317 ];
+    # Or disable the firewall altogether.
+    # networking.firewall.enable = false;
+
+    # local certificate
+    security.pki.certificateFiles = [
+      ./caddy_local_root.crt
+    ];
+
+    # Copy the NixOS configuration file and link it from the resulting system
+    # (/run/current-system/configuration.nix). This is useful in case you
+    # accidentally delete configuration.nix.
+    # system.copySystemConfiguration = true;
+
+    # This option defines the first version of NixOS you have installed on this particular machine,
+    # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
+    #
+    # Most users should NEVER change this value after the initial install, for any reason,
+    # even if you've upgraded your system to a new NixOS release.
+    #
+    # This value does NOT affect the Nixpkgs version your packages and OS are pulled from,
+    # so changing it will NOT upgrade your system - see https://nixos.org/manual/nixos/stable/#sec-upgrading for how
+    # to actually do that.
+    #
+    # This value being lower than the current NixOS release does NOT mean your system is
+    # out of date, out of support, or vulnerable.
+    #
+    # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
+    # and migrated your data accordingly.
+    #
+    # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
+    system.stateVersion = "25.05"; # Did you read the comment?
+
+  }
+  (
+    if IS_DESKTOP then
+      {
+        # desktop
+        networking.hostName = "lqr471814-desktop";
+
+        # power
+        services.tlp.settings = {
+          TLP_ENABLE = 1;
+        };
+
+        # NFS
+        services.nfs.server = {
+          enable = true;
+          exports = ''
+            /backup 192.168.1.10(insecure,rw,sync,no_subtree_check,fsid=0)
+          '';
+        };
+        fileSystems."/backup" = {
+          device = "/dev/disk/by-uuid/667d941b-4154-4150-985f-2e2c8484533a";
+          fsType = "ext4";
+        };
+
+        # networking
+        networking.interfaces.enp4s0.useDHCP = false;
+        networking.interfaces.enp4s0.ipv4.addresses = [
+          {
+            address = "192.168.1.11";
+            prefixLength = 24;
+          }
+        ];
+        networking.defaultGateway = {
+          address = "192.168.1.254";
+          interface = "enp4s0";
+        };
+      }
+    else
+      {
+        # laptop
+        networking.hostName = "lqr471814-laptop";
+
+        # power
+        services.tlp.settings = {
+          TLP_ENABLE = 1;
+          CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+          CPU_SCALING_GOVERNOR_ON_AC = "performance";
+          START_CHARGE_THRESH_BAT0 = 40;
+          STOP_CHARGE_THRESH_BAT0 = 80;
+        };
+      }
+  )
