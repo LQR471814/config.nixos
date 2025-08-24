@@ -123,6 +123,8 @@ lib.attrsets.recursiveUpdate
       git
       busybox
       wireguard-tools
+      lm_sensors
+      s-tui
 
       # core gui apps
       alacritty
@@ -265,11 +267,6 @@ lib.attrsets.recursiveUpdate
         # desktop
         networking.hostName = "lqr471814-desktop";
 
-        # power
-        services.tlp.settings = {
-          TLP_ENABLE = 1;
-        };
-
         # NFS
         services.nfs.server = {
           enable = true;
@@ -299,6 +296,22 @@ lib.attrsets.recursiveUpdate
         };
         networking.firewall.allowedTCPPorts = [ 2049 53317 ];
         networking.firewall.allowedUDPPorts = [ 2049 53317 ];
+
+        # nvidia gpu
+        nixpkgs.config.allowUnfree = true;
+        services.xserver.videoDrivers = [ "nvidia" ];
+        hardware.graphics.enable = true;
+        hardware.nvidia = {
+          modesetting.enable = true;
+          open = true;
+          nvidiaSettings = true;
+          package = config.boot.kernelPackages.nvidiaPackages.stable;
+        };
+
+        # fan module
+        boot.kernelModules = [ "nct6775" ];
+
+        services.openssh.enable = true;
       }
     else
       {
