@@ -282,6 +282,14 @@ lib.attrsets.recursiveUpdate
           "d /backup 0777 root root -"
         ];
 
+        # swap
+        swapDevices = [
+          {
+            device = "/var/lib/swapfile";
+            size = 16 * 1024; # MB
+          }
+        ];
+
         # networking
         networking.interfaces.enp4s0.useDHCP = false;
         networking.interfaces.enp4s0.ipv4.addresses = [
