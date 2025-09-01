@@ -125,6 +125,7 @@ lib.attrsets.recursiveUpdate
       wireguard-tools
       lm_sensors
       s-tui
+      linuxKernel.packages.linux_6_15.cpupower
 
       # core gui apps
       alacritty
@@ -302,8 +303,14 @@ lib.attrsets.recursiveUpdate
           address = "192.168.1.254";
           interface = "enp4s0";
         };
-        networking.firewall.allowedTCPPorts = [ 2049 53317 ];
-        networking.firewall.allowedUDPPorts = [ 2049 53317 ];
+        networking.firewall.allowedTCPPorts = [
+          2049
+          53317
+        ];
+        networking.firewall.allowedUDPPorts = [
+          2049
+          53317
+        ];
 
         # nvidia gpu
         nixpkgs.config.allowUnfree = true;
@@ -317,9 +324,12 @@ lib.attrsets.recursiveUpdate
         };
 
         # fan module
-        boot.kernelModules = [ "nct6775" ];
+        boot.kernelModules = [
+          "nct6775"
+        ];
 
         services.openssh.enable = true;
+        virtualisation.docker.enable = true;
       }
     else
       {
