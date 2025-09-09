@@ -197,6 +197,12 @@ lib.attrsets.recursiveUpdate
       };
     };
 
+    xdg.portal = {
+      enable = true;
+      extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
+      config.common.default = [ "wlr" ];
+    };
+
     programs.dconf.enable = true;
     programs.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
     security.pam.services.swaylock = { };
