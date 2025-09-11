@@ -199,7 +199,7 @@ lib.attrsets.recursiveUpdate
 
     xdg.portal = {
       enable = true;
-      extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
+      wlr.enable = true;
       config.common.default = [ "wlr" ];
     };
 
