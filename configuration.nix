@@ -127,6 +127,7 @@ lib.attrsets.recursiveUpdate
       s-tui
       linuxKernel.packages.linux_6_15.cpupower
       arduino-cli
+      screen
 
       # core gui apps
       alacritty
