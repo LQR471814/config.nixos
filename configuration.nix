@@ -126,6 +126,7 @@ lib.attrsets.recursiveUpdate
       lm_sensors
       s-tui
       linuxKernel.packages.linux_6_15.cpupower
+      arduino-cli
 
       # core gui apps
       alacritty
