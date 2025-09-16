@@ -1,4 +1,31 @@
-self: super: {
+self: super:
+let
+  # this wrapper fixes GUI issues when running UIs as sudo
+  fixSudoGui = (
+    pkg: flags:
+    super.stdenv.mkDerivation {
+      name = pkg.name + "-sudo-gui";
+
+      buildInputs = [
+        pkg
+        super.xorg.xhost
+      ];
+
+      dontUnpack = true;
+
+      installPhase = ''
+        mkdir -p $out/bin
+        for file in ${pkg}/bin/*; do
+          if [ -f "$file" ]; then
+            printf "${super.xorg.xhost}/bin/xhost +SI:localuser:root\n${super.lxqt.lxqt-sudo}/bin/lxqt-sudo '$file' ${flags}" | tee "$out/bin/$(basename "$file")"
+            chmod +x "$out/bin/$(basename "$file")"
+          fi
+        done
+      '';
+    }
+  );
+in
+{
   sandbar = super.stdenv.mkDerivation {
     name = "sandbar";
     version = "0.2";
@@ -24,4 +51,6 @@ self: super: {
 
     makeFlags = [ "PREFIX=$(out)" ];
   };
+
+  arduino-ide = fixSudoGui super.arduino-ide "--no-sandbox";
 }

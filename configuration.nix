@@ -87,6 +87,7 @@ lib.attrsets.recursiveUpdate
           "video"
           "sandbar"
           "wireshark"
+          "vboxusers"
         ]; # enable sudo for user
         shell = pkgs.fish;
       };
@@ -126,8 +127,10 @@ lib.attrsets.recursiveUpdate
       lm_sensors
       s-tui
       linuxKernel.packages.linux_6_15.cpupower
-      arduino-cli
+      arduino-ide
       screen
+      xorg.xhost
+      lxqt.lxqt-sudo
 
       # core gui apps
       alacritty
@@ -223,6 +226,17 @@ lib.attrsets.recursiveUpdate
 
     # docker
     virtualisation.docker.enable = true;
+    virtualisation.virtualbox.host = {
+      enable = true;
+      enableExtensionPack = true;
+    };
+    virtualisation.virtualbox.guest = {
+      enable = true;
+      vboxsf = true;
+      dragAndDrop = true;
+      clipboard = true;
+      seamless = true;
+    };
 
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
@@ -340,6 +354,12 @@ lib.attrsets.recursiveUpdate
         ];
 
         services.openssh.enable = true;
+
+        boot.blacklistedKernelModules = [
+          "kvm_amd"
+          "kvm_intel"
+          "kvm"
+        ];
       }
     else
       {
