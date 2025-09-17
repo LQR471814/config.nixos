@@ -20,6 +20,8 @@ lib.attrsets.recursiveUpdate
       ./hardware-configuration.nix
     ];
 
+    nixpkgs.config.allowUnfree = true;
+
     # use latest kernel
     boot.kernelPackages = pkgs.linuxPackages_latest;
 
@@ -338,7 +340,6 @@ lib.attrsets.recursiveUpdate
         ];
 
         # nvidia gpu
-        nixpkgs.config.allowUnfree = true;
         services.xserver.videoDrivers = [ "nvidia" ];
         hardware.graphics.enable = true;
         hardware.nvidia = {
