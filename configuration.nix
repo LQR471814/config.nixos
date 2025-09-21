@@ -255,6 +255,12 @@ lib.attrsets.recursiveUpdate
 
     # List services that you want to enable:
 
+    boot.blacklistedKernelModules = [
+      "kvm_amd"
+      "kvm_intel"
+      "kvm"
+    ];
+
     # Enable the OpenSSH daemon.
     # services.openssh.enable = true;
 
@@ -360,12 +366,6 @@ lib.attrsets.recursiveUpdate
         ];
 
         services.openssh.enable = true;
-
-        boot.blacklistedKernelModules = [
-          "kvm_amd"
-          "kvm_intel"
-          "kvm"
-        ];
       }
     else
       {
