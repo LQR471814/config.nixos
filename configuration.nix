@@ -118,7 +118,7 @@ lib.attrsets.recursiveUpdate
       lswt
 
       # basic utils
-      vim
+      neovim
       curl
       home-manager
       bc
