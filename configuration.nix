@@ -118,7 +118,6 @@ lib.attrsets.recursiveUpdate
       lswt
 
       # basic utils
-      neovim
       curl
       home-manager
       bc
@@ -238,6 +237,12 @@ lib.attrsets.recursiveUpdate
       dragAndDrop = true;
       clipboard = true;
       seamless = true;
+    };
+
+    # editor
+    programs.neovim = {
+      enable = true;
+      defaultEditor = true;
     };
 
     # Some programs need SUID wrappers, can be configured further or are
