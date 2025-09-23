@@ -89,7 +89,8 @@ lib.attrsets.recursiveUpdate
           "video"
           "sandbar"
           "wireshark"
-          "vboxusers"
+          "libvirtd"
+          "kvm"
         ]; # enable sudo for user
         shell = pkgs.fish;
       };
@@ -136,6 +137,11 @@ lib.attrsets.recursiveUpdate
       # core gui apps
       alacritty
       wireshark
+
+      # virtualisation
+      qemu
+      virt-manager
+      virtio-win
     ];
 
     fonts = {
@@ -241,17 +247,15 @@ lib.attrsets.recursiveUpdate
 
     # docker
     virtualisation.docker.enable = true;
-    virtualisation.virtualbox.host = {
+    virtualisation.libvirtd = {
       enable = true;
-      enableExtensionPack = true;
+      qemu = {
+        package = pkgs.qemu_kvm;
+        ovmf.enable = true;
+        swtpm.enable = true;
+      };
     };
-    virtualisation.virtualbox.guest = {
-      enable = true;
-      vboxsf = true;
-      dragAndDrop = true;
-      clipboard = true;
-      seamless = true;
-    };
+    programs.virt-manager.enable = true;
 
     # editor
     programs.neovim = {
@@ -268,12 +272,6 @@ lib.attrsets.recursiveUpdate
     # };
 
     # List services that you want to enable:
-
-    boot.blacklistedKernelModules = [
-      "kvm_amd"
-      "kvm_intel"
-      "kvm"
-    ];
 
     # Enable the OpenSSH daemon.
     # services.openssh.enable = true;
@@ -376,6 +374,8 @@ lib.attrsets.recursiveUpdate
 
         # fan module
         boot.kernelModules = [
+          "kvm"
+          "kvm_amd"
           "nct6775"
         ];
 
@@ -394,5 +394,10 @@ lib.attrsets.recursiveUpdate
           START_CHARGE_THRESH_BAT0 = 40;
           STOP_CHARGE_THRESH_BAT0 = 80;
         };
+
+        boot.kernelModules = [
+          "kvm"
+          "kvm_intel"
+        ];
       }
   )
