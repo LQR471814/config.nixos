@@ -104,7 +104,6 @@ lib.attrsets.recursiveUpdate
 
     environment.systemPackages = with pkgs; [
       # wm
-      river
       sandbar
       wlr-randr
       wl-clipboard
@@ -132,6 +131,7 @@ lib.attrsets.recursiveUpdate
       screen
       xorg.xhost
       lxqt.lxqt-sudo
+      wayland-utils
 
       # core gui apps
       alacritty
@@ -172,10 +172,24 @@ lib.attrsets.recursiveUpdate
       NIXOS_OZONE_WL = "1";
       WAYLAND_DISPLAY = "wayland-1";
       ZSH_SYSTEM_CLIPBOARD_USE_WL_CLIPBOARD = "";
+      XDG_CURRENT_DESKTOP = "river";
+    };
+
+    systemd.user.services.dbus-update-activation-environment = {
+      enable = true;
+      script = ''
+        ${pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
+      '';
     };
 
     services.seatd.enable = true;
     services.upower.enable = true;
+
+    programs.river = {
+      enable = true;
+      xwayland.enable = true;
+      extraPackages = with pkgs; [ swaylock ];
+    };
 
     systemd.services.clear-river-flag = {
       description = "clears /tmp/RIVER_ON";
