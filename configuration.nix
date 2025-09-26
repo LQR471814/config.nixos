@@ -108,7 +108,6 @@ lib.attrsets.recursiveUpdate
       sandbar
       wlr-randr
       wl-clipboard
-      clipman
       tofi
       upower
       light
