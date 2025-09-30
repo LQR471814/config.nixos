@@ -283,7 +283,7 @@ lib.attrsets.recursiveUpdate
 
     # local certificate
     security.pki.certificateFiles = [
-      ./caddy_local_root.crt
+      ./server.home.crt
     ];
 
     # Copy the NixOS configuration file and link it from the resulting system
