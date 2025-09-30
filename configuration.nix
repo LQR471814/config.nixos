@@ -283,7 +283,7 @@ lib.attrsets.recursiveUpdate
 
     # local certificate
     security.pki.certificateFiles = [
-      ./server.home.crt
+      ./home_root.crt
     ];
 
     # Copy the NixOS configuration file and link it from the resulting system
