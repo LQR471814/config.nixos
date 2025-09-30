@@ -89,7 +89,8 @@ lib.attrsets.recursiveUpdate
           "video"
           "sandbar"
           "wireshark"
-          "vboxusers"
+          "libvirtd"
+          "kvm"
         ]; # enable sudo for user
         shell = pkgs.fish;
       };
@@ -104,11 +105,9 @@ lib.attrsets.recursiveUpdate
 
     environment.systemPackages = with pkgs; [
       # wm
-      river
       sandbar
       wlr-randr
       wl-clipboard
-      clipman
       tofi
       upower
       light
@@ -118,7 +117,6 @@ lib.attrsets.recursiveUpdate
       lswt
 
       # basic utils
-      neovim
       curl
       home-manager
       bc
@@ -128,15 +126,21 @@ lib.attrsets.recursiveUpdate
       wireguard-tools
       lm_sensors
       s-tui
-      linuxKernel.packages.linux_6_15.cpupower
+      linuxKernel.packages.linux_lqx.cpupower
       arduino-ide
       screen
       xorg.xhost
       lxqt.lxqt-sudo
+      wayland-utils
 
       # core gui apps
       alacritty
       wireshark
+
+      # virtualisation
+      qemu
+      virt-manager
+      virtio-win
     ];
 
     fonts = {
@@ -173,10 +177,24 @@ lib.attrsets.recursiveUpdate
       NIXOS_OZONE_WL = "1";
       WAYLAND_DISPLAY = "wayland-1";
       ZSH_SYSTEM_CLIPBOARD_USE_WL_CLIPBOARD = "";
+      XDG_CURRENT_DESKTOP = "river";
+    };
+
+    systemd.user.services.dbus-update-activation-environment = {
+      enable = true;
+      script = ''
+        ${pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
+      '';
     };
 
     services.seatd.enable = true;
     services.upower.enable = true;
+
+    programs.river = {
+      enable = true;
+      xwayland.enable = true;
+      extraPackages = with pkgs; [ swaylock ];
+    };
 
     systemd.services.clear-river-flag = {
       description = "clears /tmp/RIVER_ON";
@@ -228,16 +246,20 @@ lib.attrsets.recursiveUpdate
 
     # docker
     virtualisation.docker.enable = true;
-    virtualisation.virtualbox.host = {
+    virtualisation.libvirtd = {
       enable = true;
-      enableExtensionPack = true;
+      qemu = {
+        package = pkgs.qemu_kvm;
+        ovmf.enable = true;
+        swtpm.enable = true;
+      };
     };
-    virtualisation.virtualbox.guest = {
+    programs.virt-manager.enable = true;
+
+    # editor
+    programs.neovim = {
       enable = true;
-      vboxsf = true;
-      dragAndDrop = true;
-      clipboard = true;
-      seamless = true;
+      defaultEditor = true;
     };
 
     # Some programs need SUID wrappers, can be configured further or are
@@ -261,7 +283,7 @@ lib.attrsets.recursiveUpdate
 
     # local certificate
     security.pki.certificateFiles = [
-      ./caddy_local_root.crt
+      ./home_root.crt
     ];
 
     # Copy the NixOS configuration file and link it from the resulting system
@@ -351,16 +373,12 @@ lib.attrsets.recursiveUpdate
 
         # fan module
         boot.kernelModules = [
+          "kvm"
+          "kvm_amd"
           "nct6775"
         ];
 
         services.openssh.enable = true;
-
-        boot.blacklistedKernelModules = [
-          "kvm_amd"
-          "kvm_intel"
-          "kvm"
-        ];
       }
     else
       {
@@ -375,5 +393,10 @@ lib.attrsets.recursiveUpdate
           START_CHARGE_THRESH_BAT0 = 40;
           STOP_CHARGE_THRESH_BAT0 = 80;
         };
+
+        boot.kernelModules = [
+          "kvm"
+          "kvm_intel"
+        ];
       }
   )
