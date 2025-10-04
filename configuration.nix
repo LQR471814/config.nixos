@@ -398,5 +398,10 @@ lib.attrsets.recursiveUpdate
           "kvm"
           "kvm_intel"
         ];
+
+        networking.networkmanager.dispatcherScripts.wifi-hook = {
+          type = "basic";
+          source = ./wifi-hook.sh;
+        };
       }
   )
