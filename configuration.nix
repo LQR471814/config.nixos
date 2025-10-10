@@ -293,6 +293,7 @@ lib.attrsets.recursiveUpdate
       trusted-public-keys = [
         "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
       ];
+      download-buffer-size = "256M";
     };
 
     # Copy the NixOS configuration file and link it from the resulting system
