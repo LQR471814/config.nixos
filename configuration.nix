@@ -345,7 +345,7 @@ lib.attrsets.recursiveUpdate
         swapDevices = [
           {
             device = "/var/lib/swapfile";
-            size = 64 * 1024; # MB
+            size = 16 * 1024; # MB
           }
         ];
 
