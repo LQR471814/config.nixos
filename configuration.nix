@@ -286,6 +286,7 @@ lib.attrsets.recursiveUpdate
       ./home_root.crt
     ];
 
+    # nix
     nix.settings = {
       substituters = [
         "https://cache.flox.dev"
@@ -295,6 +296,13 @@ lib.attrsets.recursiveUpdate
       ];
       download-buffer-size = "256M";
     };
+
+    nix.gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
+    boot.loader.systemd-boot.configurationLimit = 8;
 
     # Copy the NixOS configuration file and link it from the resulting system
     # (/run/current-system/configuration.nix). This is useful in case you
