@@ -91,6 +91,7 @@ lib.attrsets.recursiveUpdate
           "wireshark"
           "libvirtd"
           "kvm"
+          "dialout"
         ]; # enable sudo for user
         shell = pkgs.fish;
       };
