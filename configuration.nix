@@ -305,6 +305,15 @@ lib.attrsets.recursiveUpdate
     };
     boot.loader.systemd-boot.configurationLimit = 8;
 
+    # logging
+    services.journald = {
+      extraConfig = ''
+        MaxRetentionSec=30day
+        SystemMaxUse=1G
+        SystemMaxFileSize=100M
+      '';
+    };
+
     # Copy the NixOS configuration file and link it from the resulting system
     # (/run/current-system/configuration.nix). This is useful in case you
     # accidentally delete configuration.nix.
