@@ -1,19 +1,27 @@
-#!/run/current-system/sw/bin/bash
+#!/run/current-system/sw/bin/sh
 
 IFACE="$1"
 ACTION="$2"
-CONN=$(nmcli -t -f ACTIVE,SSID dev wifi | awk -F: '$1=="yes"{print $2; exit}')
+CONN=$(/run/current-system/sw/bin/nmcli -t -f ACTIVE,SSID dev wifi | /run/current-system/sw/bin/awk -F: '$1=="yes"{print $2; exit}')
 
-echo "$CONN" > /home/lqr471814/conn_id
-echo "$ACTION" > /home/lqr471814/act
+CONF="/home/lqr471814/files/Wireguard/wireguard.conf"
 
-wg-down
-if ([ "$ACTION" = "up" ] || [ "$ACTION" = "connectivity-change" ]) && [ "$CONN" != "HJHOME" ]; then
-	wg-up
+up() {
+	/run/current-system/sw/bin/wg-quick up "$CONF"
+}
+down() {
+	/run/current-system/sw/bin/wg-quick down "$CONF"
+}
 
-	echo "UP" > /home/lqr471814/vpn_status
-	exit 0
-fi
+echo $ACTION $CONN
 
-echo "DOWN" > /home/lqr471814/vpn_status
+case "$ACTION" in
+	connectivity-change)
+		case "$CONN" in
+			HJHOME) down ;;
+			*) down; up ;;
+		esac
+		;;
+	down) down ;;
+esac
 
