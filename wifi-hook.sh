@@ -19,6 +19,7 @@ case "$ACTION" in
 	connectivity-change)
 		case "$CONN" in
 			HJHOME) down ;;
+			"") down ;;
 			*) down; up ;;
 		esac
 		;;
