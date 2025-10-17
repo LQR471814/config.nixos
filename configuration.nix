@@ -32,9 +32,6 @@ lib.attrsets.recursiveUpdate
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
-    # power
-    services.tlp.enable = true;
-
     # networking
     networking.networkmanager.enable = true;
     services.resolved = {
@@ -432,13 +429,15 @@ lib.attrsets.recursiveUpdate
         # laptop
         networking.hostName = "lqr471814-laptop";
 
-        # power
-        services.tlp.settings = {
-          TLP_ENABLE = 1;
-          CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-          CPU_SCALING_GOVERNOR_ON_AC = "performance";
-          START_CHARGE_THRESH_BAT0 = 40;
-          STOP_CHARGE_THRESH_BAT0 = 80;
+        services.tlp = {
+          enable = true;
+          settings = {
+            TLP_ENABLE = 1;
+            CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+            CPU_SCALING_GOVERNOR_ON_AC = "performance";
+            START_CHARGE_THRESH_BAT0 = 40;
+            STOP_CHARGE_THRESH_BAT0 = 80;
+          };
         };
 
         boot.kernelModules = [
