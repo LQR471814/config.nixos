@@ -11,6 +11,9 @@
 
 let
   IS_DESKTOP = builtins.pathExists ./DESKTOP;
+  winapps =
+    (import (builtins.fetchTarball "https://github.com/winapps-org/winapps/archive/main.tar.gz"))
+    .packages."${pkgs.system}";
 in
 lib.attrsets.recursiveUpdate
   {
@@ -92,6 +95,7 @@ lib.attrsets.recursiveUpdate
           "libvirtd"
           "kvm"
           "dialout"
+          "docker"
         ]; # enable sudo for user
         shell = pkgs.fish;
       };
@@ -142,6 +146,8 @@ lib.attrsets.recursiveUpdate
       qemu
       virt-manager
       virtio-win
+      winapps.winapps
+      winapps.winapps-launcher
     ];
 
     fonts = {
@@ -207,21 +213,31 @@ lib.attrsets.recursiveUpdate
       };
     };
 
-    services.greetd = {
-      enable = true;
-      settings = {
-        default_session = {
+    services.greetd =
+      let
+        river-launcher = pkgs.writeShellScriptBin "river-launcher" ''
+          #!/bin/sh
+          unset WAYLAND_DISPLAY
+          if [ -f $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
+            source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
+          fi
+          ${pkgs.river}/bin/river
+        '';
+      in
+      {
+        enable = true;
+        settings.default_session = {
           user = "greeter";
           command = ''
             ${pkgs.greetd.tuigreet}/bin/tuigreet \
               --time \
+              --remember \
               --asterisks \
               --user-menu \
-              --cmd "env -u WAYLAND_DISPLAY river"
+              --cmd ${river-launcher}/bin/river-launcher
           '';
         };
       };
-    };
 
     xdg.portal = {
       enable = true;
@@ -291,10 +307,13 @@ lib.attrsets.recursiveUpdate
     nix.settings = {
       substituters = [
         "https://cache.flox.dev"
+        "https://winapps.cachix.org/"
       ];
       trusted-public-keys = [
         "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
+        "winapps.cachix.org-1:HI82jWrXZsQRar/PChgIx1unmuEsiQMQq+zt05CD36g="
       ];
+      trusted-users = [ "lqr471814" ];
       download-buffer-size = "256M";
     };
 
