@@ -440,6 +440,19 @@ lib.attrsets.recursiveUpdate
           };
         };
 
+        services.fprintd = {
+          enable = true;
+          tod.enable = true;
+          tod.driver = pkgs.libfprint-2-tod1-goodix;
+        };
+        security.pam.services.login.fprintAuth = true;
+        security.pam.services.sudo.fprintAuth = true;
+        security.pam.services.greetd.fprintAuth = true;
+        security.pam.services.swaylock.fprintAuth = true;
+        security.pam.services.swaylock.rules.auth.fprintd.order = 100;
+        security.pam.services.swaylock.rules.auth.fprintd.settings.control = "sufficient";
+        security.pam.services.swaylock.rules.auth.unix.order = 110;
+
         boot.kernelModules = [
           "kvm"
           "kvm_intel"
