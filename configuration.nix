@@ -223,6 +223,7 @@ lib.attrsets.recursiveUpdate
       in
       {
         enable = true;
+        vt = 2;
         settings.default_session = {
           user = "greeter";
           command = ''
