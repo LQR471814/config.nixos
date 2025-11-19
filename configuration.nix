@@ -152,6 +152,7 @@ lib.attrsets.recursiveUpdate
       packages = with pkgs; [
         nerd-fonts.jetbrains-mono
         source-han-serif-vf-ttf
+        source-han-serif
         ibm-plex
       ];
       fontconfig = {
