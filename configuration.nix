@@ -3,17 +3,18 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 {
+  winapps
+}:
+{
   config,
   lib,
   pkgs,
+  system ? pkgs.system,
   ...
 }:
 
 let
   IS_DESKTOP = builtins.pathExists ./DESKTOP;
-  winapps =
-    (import (builtins.fetchTarball "https://github.com/winapps-org/winapps/archive/main.tar.gz"))
-    .packages."${pkgs.system}";
 in
 lib.attrsets.recursiveUpdate
   {
@@ -143,8 +144,7 @@ lib.attrsets.recursiveUpdate
       qemu
       virt-manager
       virtio-win
-      winapps.winapps
-      winapps.winapps-launcher
+      winapps.packages."${system}".winapps
     ];
 
     fonts = {
@@ -195,7 +195,7 @@ lib.attrsets.recursiveUpdate
     services.seatd.enable = true;
     services.upower.enable = true;
 
-    programs.river = {
+    programs.river-classic = {
       enable = true;
       xwayland.enable = true;
       extraPackages = with pkgs; [ swaylock ];
@@ -219,16 +219,15 @@ lib.attrsets.recursiveUpdate
           if [ -f $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
             source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
           fi
-          ${pkgs.river}/bin/river
+          ${pkgs.river-classic}/bin/river
         '';
       in
       {
         enable = true;
-        vt = 2;
         settings.default_session = {
           user = "greeter";
           command = ''
-            ${pkgs.greetd.tuigreet}/bin/tuigreet \
+            ${pkgs.tuigreet}/bin/tuigreet \
               --time \
               --remember \
               --asterisks \
@@ -266,7 +265,6 @@ lib.attrsets.recursiveUpdate
       enable = true;
       qemu = {
         package = pkgs.qemu_kvm;
-        ovmf.enable = true;
         swtpm.enable = true;
       };
     };
