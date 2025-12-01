@@ -211,6 +211,11 @@ lib.attrsets.recursiveUpdate
       };
     };
 
+    # prevent verbose logs
+    boot.kernelParams = [
+      "quiet"
+      "loglevel=3"
+    ];
     services.greetd =
       let
         river-launcher = pkgs.writeShellScriptBin "river-launcher" ''
