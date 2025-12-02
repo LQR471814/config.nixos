@@ -1,8 +1,11 @@
 # Usage
 
 ```
-./export.sh
-sudo nixos-rebuild switch
+# apply configuration
+make
+
+# to update deps
+nix flake update
 
 # to enroll fingerprint (if applicable)
 sudo fprintd-enroll
