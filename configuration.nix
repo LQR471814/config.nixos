@@ -3,7 +3,7 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 {
-  winapps
+  winapps,
 }:
 {
   config,
@@ -318,7 +318,6 @@ lib.attrsets.recursiveUpdate
       trusted-users = [ "lqr471814" ];
       download-buffer-size = "256M";
     };
-
     nix.gc = {
       automatic = true;
       dates = "weekly";
