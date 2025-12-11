@@ -118,6 +118,8 @@ lib.attrsets.recursiveUpdate
       grim
       slurp
       lswt
+      egl-wayland
+      libsForQt5.qt5.qtwayland
 
       # basic utils
       curl
@@ -138,7 +140,7 @@ lib.attrsets.recursiveUpdate
 
       # core gui apps
       alacritty
-      wireshark
+      # wireshark
 
       # virtualisation
       qemu
