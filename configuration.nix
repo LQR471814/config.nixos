@@ -3,9 +3,13 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 {
+  winapps,
+}:
+{
   config,
   lib,
   pkgs,
+  system ? pkgs.system,
   ...
 }:
 
@@ -28,9 +32,6 @@ lib.attrsets.recursiveUpdate
     # systemd-boot EFI boot loader
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
-
-    # power
-    services.tlp.enable = true;
 
     # networking
     networking.networkmanager.enable = true;
@@ -91,7 +92,9 @@ lib.attrsets.recursiveUpdate
           "wireshark"
           "libvirtd"
           "kvm"
+          "adbusers"
           "dialout"
+          "docker"
         ]; # enable sudo for user
         shell = pkgs.fish;
       };
@@ -116,6 +119,8 @@ lib.attrsets.recursiveUpdate
       grim
       slurp
       lswt
+      egl-wayland
+      libsForQt5.qt5.qtwayland
 
       # basic utils
       curl
@@ -137,11 +142,13 @@ lib.attrsets.recursiveUpdate
       # core gui apps
       alacritty
       wireshark
+      tcpdump
 
       # virtualisation
       qemu
       virt-manager
       virtio-win
+      winapps.packages."${system}".winapps
     ];
 
     fonts = {
@@ -149,6 +156,7 @@ lib.attrsets.recursiveUpdate
       packages = with pkgs; [
         nerd-fonts.jetbrains-mono
         source-han-serif-vf-ttf
+        source-han-serif
         ibm-plex
       ];
       fontconfig = {
@@ -191,7 +199,7 @@ lib.attrsets.recursiveUpdate
     services.seatd.enable = true;
     services.upower.enable = true;
 
-    programs.river = {
+    programs.river-classic = {
       enable = true;
       xwayland.enable = true;
       extraPackages = with pkgs; [ swaylock ];
@@ -207,21 +215,36 @@ lib.attrsets.recursiveUpdate
       };
     };
 
-    services.greetd = {
-      enable = true;
-      settings = {
-        default_session = {
+    # prevent verbose logs
+    boot.kernelParams = [
+      "quiet"
+      "loglevel=3"
+    ];
+    services.greetd =
+      let
+        river-launcher = pkgs.writeShellScriptBin "river-launcher" ''
+          #!/bin/sh
+          unset WAYLAND_DISPLAY
+          if [ -f $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
+            source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
+          fi
+          ${pkgs.river-classic}/bin/river
+        '';
+      in
+      {
+        enable = true;
+        settings.default_session = {
           user = "greeter";
           command = ''
-            ${pkgs.greetd.tuigreet}/bin/tuigreet \
+            ${pkgs.tuigreet}/bin/tuigreet \
               --time \
+              --remember \
               --asterisks \
               --user-menu \
-              --cmd "env -u WAYLAND_DISPLAY river"
+              --cmd ${river-launcher}/bin/river-launcher
           '';
         };
       };
-    };
 
     xdg.portal = {
       enable = true;
@@ -245,17 +268,17 @@ lib.attrsets.recursiveUpdate
     };
     programs.nix-ld.enable = true;
 
-    # docker
+    # virtualisation
     virtualisation.docker.enable = true;
     virtualisation.libvirtd = {
       enable = true;
       qemu = {
         package = pkgs.qemu_kvm;
-        ovmf.enable = true;
         swtpm.enable = true;
       };
     };
     programs.virt-manager.enable = true;
+    programs.adb.enable = true;
 
     # editor
     programs.neovim = {
@@ -291,13 +314,15 @@ lib.attrsets.recursiveUpdate
     nix.settings = {
       substituters = [
         "https://cache.flox.dev"
+        "https://winapps.cachix.org/"
       ];
       trusted-public-keys = [
         "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
+        "winapps.cachix.org-1:HI82jWrXZsQRar/PChgIx1unmuEsiQMQq+zt05CD36g="
       ];
+      trusted-users = [ "lqr471814" ];
       download-buffer-size = "256M";
     };
-
     nix.gc = {
       automatic = true;
       dates = "weekly";
@@ -393,10 +418,11 @@ lib.attrsets.recursiveUpdate
         services.xserver.videoDrivers = [ "nvidia" ];
         hardware.graphics.enable = true;
         hardware.nvidia = {
+          powerManagement.enable = true;
           modesetting.enable = true;
           open = true;
           nvidiaSettings = true;
-          package = config.boot.kernelPackages.nvidiaPackages.stable;
+          package = config.boot.kernelPackages.nvidiaPackages.beta;
         };
 
         # fan module
@@ -413,14 +439,29 @@ lib.attrsets.recursiveUpdate
         # laptop
         networking.hostName = "lqr471814-laptop";
 
-        # power
-        services.tlp.settings = {
-          TLP_ENABLE = 1;
-          CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-          CPU_SCALING_GOVERNOR_ON_AC = "performance";
-          START_CHARGE_THRESH_BAT0 = 40;
-          STOP_CHARGE_THRESH_BAT0 = 80;
+        services.tlp = {
+          enable = true;
+          settings = {
+            TLP_ENABLE = 1;
+            CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+            CPU_SCALING_GOVERNOR_ON_AC = "performance";
+            START_CHARGE_THRESH_BAT0 = 40;
+            STOP_CHARGE_THRESH_BAT0 = 60;
+          };
         };
+
+        services.fprintd = {
+          enable = true;
+          tod.enable = true;
+          tod.driver = pkgs.libfprint-2-tod1-goodix;
+        };
+        security.pam.services.login.fprintAuth = true;
+        security.pam.services.sudo.fprintAuth = true;
+        security.pam.services.greetd.fprintAuth = true;
+        security.pam.services.swaylock.fprintAuth = true;
+        security.pam.services.swaylock.rules.auth.fprintd.order = 100;
+        security.pam.services.swaylock.rules.auth.fprintd.settings.control = "sufficient";
+        security.pam.services.swaylock.rules.auth.unix.order = 110;
 
         boot.kernelModules = [
           "kvm"
