@@ -92,6 +92,7 @@ lib.attrsets.recursiveUpdate
           "wireshark"
           "libvirtd"
           "kvm"
+          "adbusers"
           "dialout"
           "docker"
         ]; # enable sudo for user
@@ -140,7 +141,8 @@ lib.attrsets.recursiveUpdate
 
       # core gui apps
       alacritty
-      # wireshark
+      wireshark
+      tcpdump
 
       # virtualisation
       qemu
@@ -266,7 +268,7 @@ lib.attrsets.recursiveUpdate
     };
     programs.nix-ld.enable = true;
 
-    # docker
+    # virtualisation
     virtualisation.docker.enable = true;
     virtualisation.libvirtd = {
       enable = true;
@@ -276,6 +278,7 @@ lib.attrsets.recursiveUpdate
       };
     };
     programs.virt-manager.enable = true;
+    programs.adb.enable = true;
 
     # editor
     programs.neovim = {
@@ -415,10 +418,11 @@ lib.attrsets.recursiveUpdate
         services.xserver.videoDrivers = [ "nvidia" ];
         hardware.graphics.enable = true;
         hardware.nvidia = {
+          powerManagement.enable = true;
           modesetting.enable = true;
           open = true;
           nvidiaSettings = true;
-          package = config.boot.kernelPackages.nvidiaPackages.stable;
+          package = config.boot.kernelPackages.nvidiaPackages.beta;
         };
 
         # fan module
