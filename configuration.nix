@@ -121,6 +121,7 @@ lib.attrsets.recursiveUpdate
       lswt
       egl-wayland
       libsForQt5.qt5.qtwayland
+      libdrm
 
       # basic utils
       curl
@@ -450,18 +451,27 @@ lib.attrsets.recursiveUpdate
           };
         };
 
-        services.fprintd = {
-          enable = true;
-          tod.enable = true;
-          tod.driver = pkgs.libfprint-2-tod1-goodix;
-        };
-        security.pam.services.login.fprintAuth = true;
-        security.pam.services.sudo.fprintAuth = true;
-        security.pam.services.greetd.fprintAuth = true;
-        security.pam.services.swaylock.fprintAuth = true;
-        security.pam.services.swaylock.rules.auth.fprintd.order = 100;
-        security.pam.services.swaylock.rules.auth.fprintd.settings.control = "sufficient";
-        security.pam.services.swaylock.rules.auth.unix.order = 110;
+        # Use `proptest` to find your display's connector ID
+        # Prop ID can be found w/: `proptest | grep -B 5 'Broadcast RGB'`
+        #
+        # ${pkgs.libdrm}/bin/proptest -M i915 -D /dev/dri/card0 <CONNECTOR_ID> connector <PROP_ID> 1
+        services.displayManager.preStart = ''
+          ${pkgs.libdrm}/bin/proptest -M i915 -D /dev/dri/card0 280 connector 266 1
+          ${pkgs.libdrm}/bin/proptest -M i915 -D /dev/dri/card0 271 connector 266 1
+        '';
+
+        # services.fprintd = {
+        #   enable = true;
+        #   tod.enable = true;
+        #   tod.driver = pkgs.libfprint-2-tod1-goodix;
+        # };
+        # security.pam.services.login.fprintAuth = true;
+        # security.pam.services.sudo.fprintAuth = true;
+        # security.pam.services.greetd.fprintAuth = true;
+        # security.pam.services.swaylock.fprintAuth = true;
+        # security.pam.services.swaylock.rules.auth.fprintd.order = 100;
+        # security.pam.services.swaylock.rules.auth.fprintd.settings.control = "sufficient";
+        # security.pam.services.swaylock.rules.auth.unix.order = 110;
 
         boot.kernelModules = [
           "kvm"
