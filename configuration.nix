@@ -260,6 +260,13 @@ lib.attrsets.recursiveUpdate
     services.gnome.gnome-keyring.enable = true;
     programs.seahorse.enable = true;
 
+    # login
+    services.logind.settings.Login = {
+      HandleLidSwitch = "suspend";
+      HandleLidSwitchExternalPower = "suspend";
+      HandleLidSwitchDocked = "ignore";
+    };
+
     # shell
     programs.fish = {
       enable = true;
