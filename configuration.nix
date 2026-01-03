@@ -122,6 +122,7 @@ lib.attrsets.recursiveUpdate
       egl-wayland
       libsForQt5.qt5.qtwayland
       libdrm
+      river-bedload
 
       # basic utils
       curl
@@ -148,6 +149,7 @@ lib.attrsets.recursiveUpdate
       # virtualisation
       qemu
       virt-manager
+      virt-viewer
       virtio-win
       winapps.packages."${system}".winapps
     ];
@@ -223,8 +225,21 @@ lib.attrsets.recursiveUpdate
     ];
     services.greetd =
       let
+        # Use `proptest` to find your display's connector ID
+        # Prop ID can be found w/: `proptest | grep -B 5 'Broadcast RGB'`
+        #
+        # ${pkgs.libdrm}/bin/proptest -M i915 -D /dev/dri/card0 <CONNECTOR_ID> connector <PROP_ID> 1
+        color-fix =
+          if IS_DESKTOP then
+            ""
+          else
+            ''
+              /run/current-system/sw/bin/proptest -M i915 -D /dev/dri/card1 280 connector 266 1
+              /run/current-system/sw/bin/proptest -M i915 -D /dev/dri/card1 271 connector 266 1
+            '';
         river-launcher = pkgs.writeShellScriptBin "river-launcher" ''
           #!/bin/sh
+          ${color-fix}
           unset WAYLAND_DISPLAY
           if [ -f $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
             source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
@@ -457,15 +472,6 @@ lib.attrsets.recursiveUpdate
             STOP_CHARGE_THRESH_BAT0 = 60;
           };
         };
-
-        # Use `proptest` to find your display's connector ID
-        # Prop ID can be found w/: `proptest | grep -B 5 'Broadcast RGB'`
-        #
-        # ${pkgs.libdrm}/bin/proptest -M i915 -D /dev/dri/card0 <CONNECTOR_ID> connector <PROP_ID> 1
-        services.displayManager.preStart = ''
-          ${pkgs.libdrm}/bin/proptest -M i915 -D /dev/dri/card0 280 connector 266 1
-          ${pkgs.libdrm}/bin/proptest -M i915 -D /dev/dri/card0 271 connector 266 1
-        '';
 
         # services.fprintd = {
         #   enable = true;
