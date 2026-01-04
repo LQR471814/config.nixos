@@ -123,6 +123,7 @@ lib.attrsets.recursiveUpdate
       libsForQt5.qt5.qtwayland
       libdrm
       river-bedload
+      xorg.xrdb
 
       # basic utils
       curl
