@@ -3,9 +3,6 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 {
-  winapps,
-}:
-{
   config,
   lib,
   pkgs,
@@ -152,7 +149,6 @@ lib.attrsets.recursiveUpdate
       virt-manager
       virt-viewer
       virtio-win
-      winapps.packages."${system}".winapps
       iw
     ];
 
@@ -352,11 +348,9 @@ lib.attrsets.recursiveUpdate
     nix.settings = {
       substituters = [
         "https://cache.flox.dev"
-        "https://winapps.cachix.org/"
       ];
       trusted-public-keys = [
         "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
-        "winapps.cachix.org-1:HI82jWrXZsQRar/PChgIx1unmuEsiQMQq+zt05CD36g="
       ];
       trusted-users = [ "lqr471814" ];
       download-buffer-size = "256M";
