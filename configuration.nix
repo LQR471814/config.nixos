@@ -152,6 +152,7 @@ lib.attrsets.recursiveUpdate
       virt-viewer
       virtio-win
       winapps.packages."${system}".winapps
+      iw
     ];
 
     fonts = {
@@ -264,8 +265,21 @@ lib.attrsets.recursiveUpdate
 
     xdg.portal = {
       enable = true;
-      wlr.enable = true;
-      config.common.default = [ "wlr" ];
+      wlr.enable = true; # Specifically for River/wlroots
+      extraPortals = [
+        pkgs.xdg-desktop-portal-gtk
+      ];
+      config = {
+        common = {
+          # Use the GTK portal for everything by default
+          default = [ "gtk" ];
+        };
+        # For screen sharing, prioritize the wlr portal
+        river = {
+          "org.freedesktop.impl.portal.ScreenShot" = [ "wlr" ];
+          "org.freedesktop.impl.portal.ScreenCast" = [ "wlr" ];
+        };
+      };
     };
 
     programs.dconf.enable = true;
