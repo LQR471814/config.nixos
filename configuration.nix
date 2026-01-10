@@ -311,6 +311,7 @@ lib.attrsets.recursiveUpdate
         swtpm.enable = true;
       };
     };
+    virtualisation.spiceUSBRedirection.enable = true;
     programs.virt-manager.enable = true;
     programs.adb.enable = true;
 
