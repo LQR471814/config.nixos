@@ -138,6 +138,7 @@ lib.attrsets.recursiveUpdate
       xorg.xhost
       lxqt.lxqt-sudo
       wayland-utils
+      iotop
 
       # core gui apps
       alacritty
