@@ -331,9 +331,6 @@ lib.attrsets.recursiveUpdate
 
     # List services that you want to enable:
 
-    # Enable the OpenSSH daemon.
-    # services.openssh.enable = true;
-
     # Open ports in the firewall.
     networking.firewall.allowedTCPPorts = [ 53317 ];
     networking.firewall.allowedUDPPorts = [ 53317 ];
@@ -446,6 +443,7 @@ lib.attrsets.recursiveUpdate
           2049
           53317
         ];
+        services.openssh.enable = true;
 
         # nvidia gpu
         services.xserver.videoDrivers = [ "nvidia" ];
@@ -464,8 +462,6 @@ lib.attrsets.recursiveUpdate
           "kvm_amd"
           "nct6775"
         ];
-
-        services.openssh.enable = true;
       }
     else
       {
