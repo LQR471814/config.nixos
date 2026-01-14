@@ -139,6 +139,7 @@ lib.attrsets.recursiveUpdate
       lxqt.lxqt-sudo
       wayland-utils
       iotop
+      arp-scan
 
       # core gui apps
       alacritty
