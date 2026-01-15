@@ -339,10 +339,10 @@ lib.attrsets.recursiveUpdate
     # nix
     nix.settings = {
       substituters = [
-        "https://cache.flox.dev"
+        "https://cache.nixos-cuda.org"
       ];
       trusted-public-keys = [
-        "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
+        "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
       ];
       trusted-users = [ "lqr471814" ];
       download-buffer-size = "256M";
