@@ -30,19 +30,6 @@ lib.attrsets.recursiveUpdate
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
-    # networking
-    networking.networkmanager.enable = true;
-    services.resolved = {
-      enable = true;
-      dnssec = "false";
-      dnsovertls = "false";
-      extraConfig = ''
-        [Resolve]
-        DNS=
-        FallbackDNS=192.168.1.10
-      '';
-    };
-
     # temporarily disable ipv6
     # boot.kernel.sysctl = {
     #   "net.ipv6.conf.all.disable_ipv6" = 0;
@@ -72,6 +59,19 @@ lib.attrsets.recursiveUpdate
 
     # inputs
     services.libinput.enable = true;
+
+    # network
+    networking.networkmanager.enable = true;
+    services.resolved = {
+      enable = true;
+      dnssec = "false";
+      dnsovertls = "false";
+      extraConfig = ''
+        [Resolve]
+        DNS=
+        FallbackDNS=192.168.1.10
+      '';
+    };
 
     # user accounts
     users.groups.wireshark = { };
@@ -331,14 +331,6 @@ lib.attrsets.recursiveUpdate
     #   enableSSHSupport = true;
     # };
 
-    # List services that you want to enable:
-
-    # Open ports in the firewall.
-    networking.firewall.allowedTCPPorts = [ 53317 ];
-    networking.firewall.allowedUDPPorts = [ 53317 ];
-    # Or disable the firewall altogether.
-    # networking.firewall.enable = false;
-
     # local certificate
     security.pki.certificateFiles = [
       ./home_root.crt
@@ -402,51 +394,6 @@ lib.attrsets.recursiveUpdate
         # desktop
         networking.hostName = "lqr471814-desktop";
 
-        # NFS
-        services.nfs.server = {
-          enable = true;
-          exports = ''
-            /backup 192.168.1.10(rw,fsid=0)
-          '';
-        };
-        fileSystems."/backup" = {
-          device = "/dev/disk/by-uuid/667d941b-4154-4150-985f-2e2c8484533a";
-          fsType = "ext4";
-        };
-        systemd.tmpfiles.rules = [
-          "d /backup 0777 root root -"
-        ];
-
-        # swap
-        swapDevices = [
-          {
-            device = "/var/lib/swapfile";
-            size = 16 * 1024; # MB
-          }
-        ];
-
-        # networking
-        networking.interfaces.enp4s0.useDHCP = false;
-        networking.interfaces.enp4s0.ipv4.addresses = [
-          {
-            address = "192.168.1.11";
-            prefixLength = 24;
-          }
-        ];
-        networking.defaultGateway = {
-          address = "192.168.1.254";
-          interface = "enp4s0";
-        };
-        networking.firewall.allowedTCPPorts = [
-          2049
-          53317
-        ];
-        networking.firewall.allowedUDPPorts = [
-          2049
-          53317
-        ];
-        services.openssh.enable = true;
-
         # nvidia gpu
         services.xserver.videoDrivers = [ "nvidia" ];
         hardware.graphics.enable = true;
@@ -464,12 +411,58 @@ lib.attrsets.recursiveUpdate
           "kvm_amd"
           "nct6775"
         ];
+
+        # swap
+        swapDevices = [
+          {
+            device = "/var/lib/swapfile";
+            size = 16 * 1024; # MB
+          }
+        ];
+
+        # networking (manual configuration)
+        networking.firewall.enable = false;
+        services.openssh.enable = true;
+
+        networking.networkmanager = {
+          enable = true;
+          ensureProfiles.profiles = {
+            "StaticWired" = {
+              connection = {
+                id = "StaticWired";
+                type = "ethernet";
+                interface-name = "enp4s0";
+                autoconnect = true;
+              };
+              ipv4 = {
+                method = "manual";
+                address1 = "192.168.20.2/24";
+              };
+            };
+          };
+        };
+
+        # NFS
+        services.nfs.server = {
+          enable = true;
+          exports = ''
+            /backup 192.168.1.10(rw,fsid=0)
+          '';
+        };
+        fileSystems."/backup" = {
+          device = "/dev/disk/by-uuid/667d941b-4154-4150-985f-2e2c8484533a";
+          fsType = "ext4";
+        };
+        systemd.tmpfiles.rules = [
+          "d /backup 0777 root root -"
+        ];
       }
     else
       {
         # laptop
         networking.hostName = "lqr471814-laptop";
 
+        # power management
         services.tlp = {
           enable = true;
           settings = {
@@ -481,6 +474,23 @@ lib.attrsets.recursiveUpdate
           };
         };
 
+        # virutalisation
+        boot.kernelModules = [
+          "kvm"
+          "kvm_intel"
+        ];
+
+        # networking
+        networking.networkmanager.dispatcherScripts = [
+          {
+            type = "basic";
+            source = ./wifi-hook.sh;
+          }
+        ];
+        networking.firewall.allowedTCPPorts = [ 53317 ];
+        networking.firewall.allowedUDPPorts = [ 53317 ];
+
+        # Fingerprint reader
         # services.fprintd = {
         #   enable = true;
         #   tod.enable = true;
@@ -493,17 +503,5 @@ lib.attrsets.recursiveUpdate
         # security.pam.services.swaylock.rules.auth.fprintd.order = 100;
         # security.pam.services.swaylock.rules.auth.fprintd.settings.control = "sufficient";
         # security.pam.services.swaylock.rules.auth.unix.order = 110;
-
-        boot.kernelModules = [
-          "kvm"
-          "kvm_intel"
-        ];
-
-        networking.networkmanager.dispatcherScripts = [
-          {
-            type = "basic";
-            source = ./wifi-hook.sh;
-          }
-        ];
       }
   )
