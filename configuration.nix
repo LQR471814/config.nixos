@@ -140,6 +140,7 @@ lib.attrsets.recursiveUpdate
       wayland-utils
       iotop
       arp-scan
+      iftop
 
       # core gui apps
       alacritty
