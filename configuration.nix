@@ -470,8 +470,8 @@ lib.attrsets.recursiveUpdate
             TLP_ENABLE = 1;
             CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
             CPU_SCALING_GOVERNOR_ON_AC = "performance";
-            START_CHARGE_THRESH_BAT0 = 40;
-            STOP_CHARGE_THRESH_BAT0 = 60;
+            START_CHARGE_THRESH_BAT0 = 45;
+            STOP_CHARGE_THRESH_BAT0 = 50;
           };
         };
 
