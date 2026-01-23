@@ -317,6 +317,17 @@ lib.attrsets.recursiveUpdate
     virtualisation.spiceUSBRedirection.enable = true;
     programs.virt-manager.enable = true;
     programs.adb.enable = true;
+    services.samba = {
+      enable = true;
+      settings = {
+        shared = {
+          path = "/home/lqr471814";
+          browseable = true;
+          "read only" = false;
+          "guest ok" = true;
+        };
+      };
+    };
 
     # editor
     programs.neovim = {
