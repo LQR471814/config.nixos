@@ -320,8 +320,14 @@ lib.attrsets.recursiveUpdate
     services.samba = {
       enable = true;
       settings = {
+        global = {
+          "workgroup" = "WORKGROUP";
+          "server string" = "nixos";
+          "security" = "user";
+          "map to guest" = "bad user";
+        };
         shared = {
-          path = "/home/lqr471814";
+          path = "/srv/shared";
           browseable = true;
           "read only" = false;
           "guest ok" = true;
@@ -501,6 +507,11 @@ lib.attrsets.recursiveUpdate
         ];
         networking.firewall.allowedTCPPorts = [ 53317 ];
         networking.firewall.allowedUDPPorts = [ 53317 ];
+        networking.nftables.enable = true;
+        networking.firewall.extraInputRules = ''
+          ip saddr 192.168.122.0/24 tcp dport { 445, 139 } accept
+          ip saddr 192.168.122.0/24 udp dport { 137, 138 } accept
+        '';
 
         # Fingerprint reader
         # services.fprintd = {
