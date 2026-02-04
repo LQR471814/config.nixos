@@ -91,7 +91,7 @@ lib.attrsets.recursiveUpdate
           "kvm"
           "adbusers"
           "dialout"
-          "docker"
+          "podman"
         ]; # enable sudo for user
         shell = pkgs.fish;
       };
@@ -153,6 +153,7 @@ lib.attrsets.recursiveUpdate
       virt-viewer
       virtio-win
       iw
+      docker-compose
     ];
 
     fonts = {
@@ -306,7 +307,12 @@ lib.attrsets.recursiveUpdate
     programs.nix-ld.enable = true;
 
     # virtualisation
-    virtualisation.docker.enable = true;
+    virtualisation.docker.enable = false;
+    virtualisation.podman = {
+      enable = true;
+      dockerCompat = true;
+      dockerSocket.enable = true;
+    };
     virtualisation.libvirtd = {
       enable = true;
       qemu = {
