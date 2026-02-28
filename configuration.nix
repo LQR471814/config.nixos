@@ -380,6 +380,14 @@ lib.attrsets.recursiveUpdate
     };
     boot.loader.systemd-boot.configurationLimit = 8;
 
+    # swap
+    swapDevices = [
+      {
+        device = "/var/lib/swapfile";
+        size = 16 * 1024; # MB
+      }
+    ];
+
     # logging
     services.journald = {
       extraConfig = ''
@@ -436,14 +444,6 @@ lib.attrsets.recursiveUpdate
           "kvm"
           "kvm_amd"
           "nct6775"
-        ];
-
-        # swap
-        swapDevices = [
-          {
-            device = "/var/lib/swapfile";
-            size = 16 * 1024; # MB
-          }
         ];
 
         # networking (manual configuration)
