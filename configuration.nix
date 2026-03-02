@@ -290,6 +290,16 @@ lib.attrsets.recursiveUpdate
     services.gnome.gnome-keyring.enable = true;
     programs.seahorse.enable = true;
 
+    # searxng
+    services.searx = {
+      enable = true;
+      settings = {
+        server.port = 8585;
+        server.bind_address = "127.0.0.1";
+        server.secret_key = "extremely secret key";
+      };
+    };
+
     # login
     services.logind.settings.Login = {
       HandleLidSwitch = "suspend";
