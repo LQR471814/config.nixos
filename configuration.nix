@@ -297,6 +297,13 @@ lib.attrsets.recursiveUpdate
         server.port = 8585;
         server.bind_address = "127.0.0.1";
         server.secret_key = "extremely secret key";
+        engines = [
+          {
+            name = "wikidata";
+            engine = "wikidata";
+            disabled = true;
+          }
+        ];
       };
     };
 
