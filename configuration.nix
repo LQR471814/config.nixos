@@ -300,6 +300,10 @@ lib.attrsets.recursiveUpdate
         search = {
           safe_search = 1;
           default_lang = "en";
+          formats = [
+            "html"
+            "json"
+          ];
         };
         engines = [
           {
