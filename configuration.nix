@@ -121,6 +121,7 @@ lib.attrsets.recursiveUpdate
       libdrm
       river-bedload
       xorg.xrdb
+      at-spi2-core
 
       # basic utils
       curl
@@ -194,6 +195,9 @@ lib.attrsets.recursiveUpdate
       XDG_CURRENT_DESKTOP = "river";
     };
 
+    services.dbus.packages = with pkgs; [
+      at-spi2-core
+    ];
     systemd.user.services.dbus-update-activation-environment = {
       enable = true;
       script = ''
