@@ -122,6 +122,7 @@ lib.attrsets.recursiveUpdate
       river-bedload
       xorg.xrdb
       at-spi2-core
+      accerciser
 
       # basic utils
       curl
