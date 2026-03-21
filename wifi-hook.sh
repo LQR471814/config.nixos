@@ -4,7 +4,7 @@ IFACE="$1"
 ACTION="$2"
 CONN=$(/run/current-system/sw/bin/nmcli -t -f ACTIVE,SSID dev wifi | /run/current-system/sw/bin/awk -F: '$1=="yes"{print $2; exit}')
 
-CONF="/home/lqr471814/files/Wireguard/wireguard.conf"
+CONF="/home/lqr471814/files/Applications/Wireguard/wireguard.conf"
 
 up() {
 	/run/current-system/sw/bin/wg-quick up "$CONF"

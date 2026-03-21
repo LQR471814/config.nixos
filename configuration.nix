@@ -3,9 +3,6 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 {
-  winapps,
-}:
-{
   config,
   lib,
   pkgs,
@@ -32,19 +29,6 @@ lib.attrsets.recursiveUpdate
     # systemd-boot EFI boot loader
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
-
-    # networking
-    networking.networkmanager.enable = true;
-    services.resolved = {
-      enable = true;
-      dnssec = "false";
-      dnsovertls = "false";
-      extraConfig = ''
-        [Resolve]
-        DNS=
-        FallbackDNS=192.168.1.10
-      '';
-    };
 
     # temporarily disable ipv6
     # boot.kernel.sysctl = {
@@ -76,6 +60,19 @@ lib.attrsets.recursiveUpdate
     # inputs
     services.libinput.enable = true;
 
+    # network
+    networking.networkmanager.enable = true;
+    services.resolved = {
+      enable = true;
+      dnssec = "false";
+      dnsovertls = "false";
+      extraConfig = ''
+        [Resolve]
+        DNS=
+        FallbackDNS=192.168.1.10
+      '';
+    };
+
     # user accounts
     users.groups.wireshark = { };
     users.users = {
@@ -94,7 +91,7 @@ lib.attrsets.recursiveUpdate
           "kvm"
           "adbusers"
           "dialout"
-          "docker"
+          "podman"
         ]; # enable sudo for user
         shell = pkgs.fish;
       };
@@ -121,6 +118,11 @@ lib.attrsets.recursiveUpdate
       lswt
       egl-wayland
       libsForQt5.qt5.qtwayland
+      libdrm
+      river-bedload
+      xorg.xrdb
+      at-spi2-core
+      accerciser
 
       # basic utils
       curl
@@ -138,6 +140,9 @@ lib.attrsets.recursiveUpdate
       xorg.xhost
       lxqt.lxqt-sudo
       wayland-utils
+      iotop
+      arp-scan
+      iftop
 
       # core gui apps
       alacritty
@@ -147,8 +152,10 @@ lib.attrsets.recursiveUpdate
       # virtualisation
       qemu
       virt-manager
+      virt-viewer
       virtio-win
-      winapps.packages."${system}".winapps
+      iw
+      docker-compose
     ];
 
     fonts = {
@@ -189,6 +196,9 @@ lib.attrsets.recursiveUpdate
       XDG_CURRENT_DESKTOP = "river";
     };
 
+    services.dbus.packages = with pkgs; [
+      at-spi2-core
+    ];
     systemd.user.services.dbus-update-activation-environment = {
       enable = true;
       script = ''
@@ -215,6 +225,11 @@ lib.attrsets.recursiveUpdate
       };
     };
 
+    # bluetooth
+    hardware.bluetooth.enable = true;
+    hardware.bluetooth.powerOnBoot = true;
+    services.blueman.enable = true;
+
     # prevent verbose logs
     boot.kernelParams = [
       "quiet"
@@ -222,8 +237,21 @@ lib.attrsets.recursiveUpdate
     ];
     services.greetd =
       let
+        # Use `proptest` to find your display's connector ID
+        # Prop ID can be found w/: `proptest | grep -B 5 'Broadcast RGB'`
+        #
+        # ${pkgs.libdrm}/bin/proptest -M i915 -D /dev/dri/card0 <CONNECTOR_ID> connector <PROP_ID> 1
+        color-fix =
+          if IS_DESKTOP then
+            ""
+          else
+            ''
+              /run/current-system/sw/bin/proptest -M i915 -D /dev/dri/card1 280 connector 266 1
+              /run/current-system/sw/bin/proptest -M i915 -D /dev/dri/card1 271 connector 266 1
+            '';
         river-launcher = pkgs.writeShellScriptBin "river-launcher" ''
           #!/bin/sh
+          ${color-fix}
           unset WAYLAND_DISPLAY
           if [ -f $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
             source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
@@ -248,8 +276,21 @@ lib.attrsets.recursiveUpdate
 
     xdg.portal = {
       enable = true;
-      wlr.enable = true;
-      config.common.default = [ "wlr" ];
+      wlr.enable = true; # Specifically for River/wlroots
+      extraPortals = [
+        pkgs.xdg-desktop-portal-gtk
+      ];
+      config = {
+        common = {
+          # Use the GTK portal for everything by default
+          default = [ "gtk" ];
+        };
+        # For screen sharing, prioritize the wlr portal
+        river = {
+          "org.freedesktop.impl.portal.ScreenShot" = [ "wlr" ];
+          "org.freedesktop.impl.portal.ScreenCast" = [ "wlr" ];
+        };
+      };
     };
 
     programs.dconf.enable = true;
@@ -258,6 +299,38 @@ lib.attrsets.recursiveUpdate
     security.pam.services.greetd.enableGnomeKeyring = true;
     services.gnome.gnome-keyring.enable = true;
     programs.seahorse.enable = true;
+
+    # searxng
+    services.searx = {
+      enable = true;
+      settings = {
+        server.port = 8585;
+        server.bind_address = "127.0.0.1";
+        server.secret_key = "extremely secret key";
+        search = {
+          safe_search = 1;
+          default_lang = "en";
+          formats = [
+            "html"
+            "json"
+          ];
+        };
+        engines = [
+          {
+            name = "wikidata";
+            engine = "wikidata";
+            disabled = true;
+          }
+        ];
+      };
+    };
+
+    # login
+    services.logind.settings.Login = {
+      HandleLidSwitch = "suspend";
+      HandleLidSwitchExternalPower = "suspend";
+      HandleLidSwitchDocked = "ignore";
+    };
 
     # shell
     programs.fish = {
@@ -269,7 +342,12 @@ lib.attrsets.recursiveUpdate
     programs.nix-ld.enable = true;
 
     # virtualisation
-    virtualisation.docker.enable = true;
+    virtualisation.docker.enable = false;
+    virtualisation.podman = {
+      enable = true;
+      dockerCompat = true;
+      dockerSocket.enable = true;
+    };
     virtualisation.libvirtd = {
       enable = true;
       qemu = {
@@ -277,8 +355,28 @@ lib.attrsets.recursiveUpdate
         swtpm.enable = true;
       };
     };
+    virtualisation.spiceUSBRedirection.enable = true;
+    networking.firewall.trustedInterfaces = [ "virbr0" ];
     programs.virt-manager.enable = true;
     programs.adb.enable = true;
+    services.samba = {
+      enable = true;
+      settings = {
+        global = {
+          "workgroup" = "WORKGROUP";
+          "server string" = "nixos";
+          "security" = "user";
+          "map to guest" = "bad user";
+        };
+        shared = {
+          path = "/srv/shared";
+          browseable = true;
+          "read only" = false;
+          "guest ok" = true;
+        };
+      };
+    };
+    # boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
     # editor
     programs.neovim = {
@@ -294,17 +392,6 @@ lib.attrsets.recursiveUpdate
     #   enableSSHSupport = true;
     # };
 
-    # List services that you want to enable:
-
-    # Enable the OpenSSH daemon.
-    # services.openssh.enable = true;
-
-    # Open ports in the firewall.
-    networking.firewall.allowedTCPPorts = [ 53317 ];
-    networking.firewall.allowedUDPPorts = [ 53317 ];
-    # Or disable the firewall altogether.
-    # networking.firewall.enable = false;
-
     # local certificate
     security.pki.certificateFiles = [
       ./home_root.crt
@@ -313,12 +400,10 @@ lib.attrsets.recursiveUpdate
     # nix
     nix.settings = {
       substituters = [
-        "https://cache.flox.dev"
-        "https://winapps.cachix.org/"
+        "https://cache.nixos-cuda.org"
       ];
       trusted-public-keys = [
-        "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
-        "winapps.cachix.org-1:HI82jWrXZsQRar/PChgIx1unmuEsiQMQq+zt05CD36g="
+        "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
       ];
       trusted-users = [ "lqr471814" ];
       download-buffer-size = "256M";
@@ -326,9 +411,17 @@ lib.attrsets.recursiveUpdate
     nix.gc = {
       automatic = true;
       dates = "weekly";
-      options = "--delete-older-than 30d";
+      options = "--delete-older-than 64d";
     };
     boot.loader.systemd-boot.configurationLimit = 8;
+
+    # swap
+    swapDevices = [
+      {
+        device = "/var/lib/swapfile";
+        size = 16 * 1024; # MB
+      }
+    ];
 
     # logging
     services.journald = {
@@ -370,50 +463,6 @@ lib.attrsets.recursiveUpdate
         # desktop
         networking.hostName = "lqr471814-desktop";
 
-        # NFS
-        services.nfs.server = {
-          enable = true;
-          exports = ''
-            /backup 192.168.1.10(rw,fsid=0)
-          '';
-        };
-        fileSystems."/backup" = {
-          device = "/dev/disk/by-uuid/667d941b-4154-4150-985f-2e2c8484533a";
-          fsType = "ext4";
-        };
-        systemd.tmpfiles.rules = [
-          "d /backup 0777 root root -"
-        ];
-
-        # swap
-        swapDevices = [
-          {
-            device = "/var/lib/swapfile";
-            size = 16 * 1024; # MB
-          }
-        ];
-
-        # networking
-        networking.interfaces.enp4s0.useDHCP = false;
-        networking.interfaces.enp4s0.ipv4.addresses = [
-          {
-            address = "192.168.1.11";
-            prefixLength = 24;
-          }
-        ];
-        networking.defaultGateway = {
-          address = "192.168.1.254";
-          interface = "enp4s0";
-        };
-        networking.firewall.allowedTCPPorts = [
-          2049
-          53317
-        ];
-        networking.firewall.allowedUDPPorts = [
-          2049
-          53317
-        ];
-
         # nvidia gpu
         services.xserver.videoDrivers = [ "nvidia" ];
         hardware.graphics.enable = true;
@@ -432,47 +481,93 @@ lib.attrsets.recursiveUpdate
           "nct6775"
         ];
 
+        # networking (manual configuration)
+        networking.firewall.enable = false;
         services.openssh.enable = true;
+
+        networking.networkmanager = {
+          enable = true;
+          ensureProfiles.profiles = {
+            "StaticWired" = {
+              connection = {
+                id = "StaticWired";
+                type = "ethernet";
+                interface-name = "enp4s0";
+                autoconnect = true;
+              };
+              ipv4 = {
+                method = "manual";
+                address1 = "192.168.20.2/24";
+              };
+            };
+          };
+        };
+
+        # NFS
+        services.nfs.server = {
+          enable = true;
+          exports = ''
+            /backup 192.168.1.10(rw,fsid=0)
+          '';
+        };
+        fileSystems."/backup" = {
+          device = "/dev/disk/by-uuid/667d941b-4154-4150-985f-2e2c8484533a";
+          fsType = "ext4";
+        };
+        systemd.tmpfiles.rules = [
+          "d /backup 0777 root root -"
+        ];
       }
     else
       {
         # laptop
         networking.hostName = "lqr471814-laptop";
 
+        # power management
         services.tlp = {
           enable = true;
           settings = {
             TLP_ENABLE = 1;
             CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
             CPU_SCALING_GOVERNOR_ON_AC = "performance";
-            START_CHARGE_THRESH_BAT0 = 40;
-            STOP_CHARGE_THRESH_BAT0 = 60;
+            START_CHARGE_THRESH_BAT0 = 0;
+            STOP_CHARGE_THRESH_BAT0 = 50;
           };
         };
 
-        services.fprintd = {
-          enable = true;
-          tod.enable = true;
-          tod.driver = pkgs.libfprint-2-tod1-goodix;
-        };
-        security.pam.services.login.fprintAuth = true;
-        security.pam.services.sudo.fprintAuth = true;
-        security.pam.services.greetd.fprintAuth = true;
-        security.pam.services.swaylock.fprintAuth = true;
-        security.pam.services.swaylock.rules.auth.fprintd.order = 100;
-        security.pam.services.swaylock.rules.auth.fprintd.settings.control = "sufficient";
-        security.pam.services.swaylock.rules.auth.unix.order = 110;
-
+        # virutalisation
         boot.kernelModules = [
           "kvm"
           "kvm_intel"
         ];
 
+        # networking
         networking.networkmanager.dispatcherScripts = [
           {
             type = "basic";
             source = ./wifi-hook.sh;
           }
         ];
+        networking.firewall.allowedTCPPorts = [ 53317 ];
+        networking.firewall.allowedUDPPorts = [ 53317 ];
+        networking.nftables.enable = true;
+        networking.firewall.extraInputRules = ''
+          ip saddr 192.168.122.0/24 tcp dport { 445, 139 } accept
+          ip saddr 192.168.122.0/24 udp dport { 137, 138 } accept
+        '';
+
+        # Fingerprint reader
+        # services.fprintd = {
+        #   enable = true;
+        #   tod.enable = true;
+        #   tod.driver = pkgs.libfprint-2-tod1-goodix;
+        # };
+        # security.pam.services.login.fprintAuth = true;
+        # security.pam.services.sudo.fprintAuth = true;
+        # security.pam.services.greetd.fprintAuth = true;
+        # security.pam.services.swaylock.fprintAuth = true;
+        # security.pam.services.swaylock.rules.auth.fprintd.order = 100;
+        # security.pam.services.swaylock.rules.auth.fprintd.settings.control = "sufficient";
+        # security.pam.services.swaylock.rules.auth.unix.order = 110;
       }
   )
