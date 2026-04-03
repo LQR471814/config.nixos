@@ -231,7 +231,7 @@ lib.attrsets.recursiveUpdate
         # Prop ID can be found w/: `proptest | grep -B 5 'Broadcast RGB'`
         #
         # ${pkgs.libdrm}/bin/proptest -M i915 -D /dev/dri/card0 <CONNECTOR_ID> connector <PROP_ID> 1
-        color-fix =
+        fix-color =
           if IS_DESKTOP then
             ""
           else
@@ -240,13 +240,11 @@ lib.attrsets.recursiveUpdate
               /run/current-system/sw/bin/proptest -M i915 -D /dev/dri/card1 271 connector 266 1
             '';
         river-launcher = pkgs.writeShellScriptBin "river-launcher" ''
-          #!/bin/sh
-          ${color-fix}
-          unset WAYLAND_DISPLAY
-          if [ -f $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
-            source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
-          fi
-          ${pkgs.river-classic}/bin/river
+          #!/bin/bash
+
+          ${fix-color}
+
+          ${builtins.readFile ./launch-river.sh}
         '';
       in
       {
