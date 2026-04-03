@@ -215,16 +215,6 @@ lib.attrsets.recursiveUpdate
       extraPackages = with pkgs; [ swaylock ];
     };
 
-    systemd.services.clear-river-flag = {
-      description = "clears /tmp/RIVER_ON";
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = "/run/current-system/sw/bin/rm -f /tmp/RIVER_ON";
-      };
-    };
-
     # bluetooth
     hardware.bluetooth.enable = true;
     hardware.bluetooth.powerOnBoot = true;
