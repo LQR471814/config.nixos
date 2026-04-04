@@ -382,7 +382,7 @@ lib.attrsets.recursiveUpdate
 
     # local certificate
     security.pki.certificateFiles = [
-      ./home_root.crt
+      ./root-ca.crt
     ];
 
     # nix
