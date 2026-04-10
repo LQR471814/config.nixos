@@ -395,6 +395,7 @@ lib.attrsets.recursiveUpdate
       ];
       trusted-users = [ "lqr471814" ];
       download-buffer-size = "256M";
+      auto-optimise-store = true;
     };
     nix.gc = {
       automatic = true;
