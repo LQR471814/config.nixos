@@ -134,7 +134,7 @@ lib.attrsets.recursiveUpdate
       wireguard-tools
       lm_sensors
       s-tui
-      linuxKernel.packages.linux_lqx.cpupower
+      linuxKernel.packages.linux_zen.cpupower
       arduino-ide
       screen
       xorg.xhost
