@@ -54,5 +54,6 @@ in
 
   arduino-ide = fixSudoGui super.arduino-ide "--no-sandbox";
   wireshark = fixSudoGui super.wireshark "";
+  gparted = fixSudoGui super.gparted "";
   # virt-manager = fixSudoGui super.virt-manager "";
 }

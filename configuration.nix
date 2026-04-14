@@ -143,6 +143,7 @@ lib.attrsets.recursiveUpdate
       iotop
       arp-scan
       iftop
+      gparted
 
       # core gui apps
       alacritty
