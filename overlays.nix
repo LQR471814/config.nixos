@@ -8,7 +8,7 @@ let
 
       buildInputs = [
         pkg
-        super.xorg.xhost
+        super.xhost
       ];
 
       dontUnpack = true;

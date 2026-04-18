@@ -64,13 +64,12 @@ lib.attrsets.recursiveUpdate
     networking.networkmanager.enable = true;
     services.resolved = {
       enable = true;
-      dnssec = "false";
-      dnsovertls = "false";
-      extraConfig = ''
-        [Resolve]
-        DNS=
-        FallbackDNS=192.168.1.10
-      '';
+      settings.Resolve = {
+        DNS = "";
+        FallbackDNS = [ "192.168.1.10" ];
+        DNSOverTLS = "false";
+        DNSSEC = "false";
+      };
     };
 
     # user accounts
@@ -111,7 +110,7 @@ lib.attrsets.recursiveUpdate
       wl-clipboard
       tofi
       upower
-      light
+      brightnessctl
       papirus-icon-theme
       grim
       slurp
@@ -120,7 +119,7 @@ lib.attrsets.recursiveUpdate
       libsForQt5.qt5.qtwayland
       libdrm
       river-bedload
-      xorg.xrdb
+      xrdb
       at-spi2-core
       accerciser
 
@@ -137,7 +136,7 @@ lib.attrsets.recursiveUpdate
       linuxKernel.packages.linux_zen.cpupower
       arduino-ide
       screen
-      xorg.xhost
+      xhost
       lxqt.lxqt-sudo
       wayland-utils
       iotop
@@ -157,6 +156,7 @@ lib.attrsets.recursiveUpdate
       virtio-win
       iw
       docker-compose
+      android-tools
     ];
 
     fonts = {
@@ -347,7 +347,6 @@ lib.attrsets.recursiveUpdate
     virtualisation.spiceUSBRedirection.enable = true;
     networking.firewall.trustedInterfaces = [ "virbr0" ];
     programs.virt-manager.enable = true;
-    programs.adb.enable = true;
     services.samba = {
       enable = true;
       settings = {
