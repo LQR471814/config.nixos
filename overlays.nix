@@ -17,7 +17,7 @@ let
         mkdir -p $out/bin
         for file in ${pkg}/bin/*; do
           if [ -f "$file" ]; then
-            printf "${super.xorg.xhost}/bin/xhost +SI:localuser:root\n${super.lxqt.lxqt-sudo}/bin/lxqt-sudo '$file' ${flags}" | tee "$out/bin/$(basename "$file")"
+            printf "${super.xhost}/bin/xhost +SI:localuser:root\n${super.lxqt.lxqt-sudo}/bin/lxqt-sudo '$file' ${flags}" | tee "$out/bin/$(basename "$file")"
             chmod +x "$out/bin/$(basename "$file")"
           fi
         done
