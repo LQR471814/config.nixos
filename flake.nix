@@ -1,7 +1,7 @@
 {
   description = "NixOS configuration";
   inputs = {
-    nixpkgs.url = "github:flox/nixpkgs/unstable";
+    nixpkgs.url = "nixpkgs/nixos-25.11";
   };
   outputs =
     inputs@{ nixpkgs, ... }:

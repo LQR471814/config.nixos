@@ -7,6 +7,7 @@
   lib,
   pkgs,
   system ? pkgs.system,
+  stable,
   ...
 }:
 
@@ -64,12 +65,13 @@ lib.attrsets.recursiveUpdate
     networking.networkmanager.enable = true;
     services.resolved = {
       enable = true;
-      settings.Resolve = {
-        DNS = "";
-        FallbackDNS = [ "192.168.1.10" ];
-        DNSOverTLS = "false";
-        DNSSEC = "false";
-      };
+      extraConfig = ''
+        [Resolve]
+        DNS=
+        FallbackDNS=192.168.1.10
+        DNSOverTLS=no
+        DNSSEC=no
+      '';
     };
 
     # user accounts
@@ -92,7 +94,7 @@ lib.attrsets.recursiveUpdate
           "dialout"
           "podman"
         ]; # enable sudo for user
-        shell = pkgs.fish;
+        shell = pkgs.nushell;
       };
     };
 
@@ -119,7 +121,7 @@ lib.attrsets.recursiveUpdate
       libsForQt5.qt5.qtwayland
       libdrm
       river-bedload
-      xrdb
+      xorg.xrdb
       at-spi2-core
       accerciser
 
@@ -322,12 +324,6 @@ lib.attrsets.recursiveUpdate
     };
 
     # shell
-    programs.fish = {
-      enable = true;
-      interactiveShellInit = ''
-        set -g fish_key_bindings fish_vi_key_bindings
-      '';
-    };
     programs.nix-ld.enable = true;
 
     # virtualisation
