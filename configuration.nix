@@ -346,6 +346,13 @@ lib.attrsets.recursiveUpdate
     };
     virtualisation.spiceUSBRedirection.enable = true;
     networking.firewall.trustedInterfaces = [ "virbr0" ];
+    networking.firewall.allowedTCPPorts = [
+      22000
+    ];
+    networking.firewall.allowedUDPPorts = [
+      22000
+      21027
+    ];
     programs.virt-manager.enable = true;
     programs.adb.enable = true;
     services.samba = {
