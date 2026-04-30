@@ -7,7 +7,7 @@
   lib,
   pkgs,
   system ? pkgs.system,
-  stable,
+  unstablePkgs,
   ...
 }:
 
@@ -94,7 +94,7 @@ lib.attrsets.recursiveUpdate
           "dialout"
           "podman"
         ]; # enable sudo for user
-        shell = pkgs.nushell;
+        shell = unstablePkgs.nushell;
       };
     };
 
