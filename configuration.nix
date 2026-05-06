@@ -530,7 +530,7 @@ lib.attrsets.recursiveUpdate
         networking.networkmanager.dispatcherScripts = [
           {
             type = "basic";
-            source = ./wifi-hook.sh;
+            source = "${import ./wifi-hook.nix pkgs}/bin/wifi-hook";
           }
         ];
         networking.firewall.allowedTCPPorts = [ 53317 ];

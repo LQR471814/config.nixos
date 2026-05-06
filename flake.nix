@@ -22,5 +22,6 @@
           (import ./configuration.nix)
         ];
       };
+      # test = import ./wifi-hook.nix unstablePkgs;
     };
 }
