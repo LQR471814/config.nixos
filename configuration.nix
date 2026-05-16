@@ -164,7 +164,7 @@ lib.attrsets.recursiveUpdate
     fonts = {
       enableDefaultPackages = true;
       packages = with pkgs; [
-        nerd-fonts.jetbrains-mono
+        nerd-fonts.lilex
         source-han-serif-vf-ttf
         source-han-serif
         ibm-plex
@@ -181,8 +181,7 @@ lib.attrsets.recursiveUpdate
             "Source Han Serif SC VF"
           ];
           monospace = [
-            "IBM Plex Mono"
-            "JetBrainsMono NF"
+            "Lilex Nerd Font"
             "Source Han Serif SC VF"
           ];
         };
