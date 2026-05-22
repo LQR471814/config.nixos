@@ -7,6 +7,7 @@
   lib,
   pkgs,
   system ? pkgs.system,
+  unstablePkgs,
   ...
 }:
 
@@ -64,12 +65,12 @@ lib.attrsets.recursiveUpdate
     networking.networkmanager.enable = true;
     services.resolved = {
       enable = true;
-      dnssec = "false";
-      dnsovertls = "false";
       extraConfig = ''
         [Resolve]
         DNS=
         FallbackDNS=192.168.1.10
+        DNSOverTLS=no
+        DNSSEC=no
       '';
     };
 
@@ -93,7 +94,7 @@ lib.attrsets.recursiveUpdate
           "dialout"
           "podman"
         ]; # enable sudo for user
-        shell = pkgs.fish;
+        shell = unstablePkgs.nushell;
       };
     };
 
@@ -111,7 +112,7 @@ lib.attrsets.recursiveUpdate
       wl-clipboard
       tofi
       upower
-      light
+      brightnessctl
       papirus-icon-theme
       grim
       slurp
@@ -134,15 +135,16 @@ lib.attrsets.recursiveUpdate
       wireguard-tools
       lm_sensors
       s-tui
-      linuxKernel.packages.linux_lqx.cpupower
+      linuxKernel.packages.linux_zen.cpupower
       arduino-ide
       screen
-      xorg.xhost
+      xhost
       lxqt.lxqt-sudo
       wayland-utils
       iotop
       arp-scan
       iftop
+      gparted
 
       # core gui apps
       alacritty
@@ -156,12 +158,13 @@ lib.attrsets.recursiveUpdate
       virtio-win
       iw
       docker-compose
+      android-tools
     ];
 
     fonts = {
       enableDefaultPackages = true;
       packages = with pkgs; [
-        nerd-fonts.jetbrains-mono
+        nerd-fonts.lilex
         source-han-serif-vf-ttf
         source-han-serif
         ibm-plex
@@ -178,8 +181,7 @@ lib.attrsets.recursiveUpdate
             "Source Han Serif SC VF"
           ];
           monospace = [
-            "IBM Plex Mono"
-            "JetBrainsMono NF"
+            "Lilex Nerd Font"
             "Source Han Serif SC VF"
           ];
         };
@@ -215,16 +217,6 @@ lib.attrsets.recursiveUpdate
       extraPackages = with pkgs; [ swaylock ];
     };
 
-    systemd.services.clear-river-flag = {
-      description = "clears /tmp/RIVER_ON";
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = "/run/current-system/sw/bin/rm -f /tmp/RIVER_ON";
-      };
-    };
-
     # bluetooth
     hardware.bluetooth.enable = true;
     hardware.bluetooth.powerOnBoot = true;
@@ -241,7 +233,7 @@ lib.attrsets.recursiveUpdate
         # Prop ID can be found w/: `proptest | grep -B 5 'Broadcast RGB'`
         #
         # ${pkgs.libdrm}/bin/proptest -M i915 -D /dev/dri/card0 <CONNECTOR_ID> connector <PROP_ID> 1
-        color-fix =
+        fix-color =
           if IS_DESKTOP then
             ""
           else
@@ -250,13 +242,11 @@ lib.attrsets.recursiveUpdate
               /run/current-system/sw/bin/proptest -M i915 -D /dev/dri/card1 271 connector 266 1
             '';
         river-launcher = pkgs.writeShellScriptBin "river-launcher" ''
-          #!/bin/sh
-          ${color-fix}
-          unset WAYLAND_DISPLAY
-          if [ -f $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
-            source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
-          fi
-          ${pkgs.river-classic}/bin/river
+          #!/bin/bash
+
+          ${fix-color}
+
+          ${builtins.readFile ./launch-river.sh}
         '';
       in
       {
@@ -333,12 +323,6 @@ lib.attrsets.recursiveUpdate
     };
 
     # shell
-    programs.fish = {
-      enable = true;
-      interactiveShellInit = ''
-        set -g fish_key_bindings fish_vi_key_bindings
-      '';
-    };
     programs.nix-ld.enable = true;
 
     # virtualisation
@@ -358,7 +342,6 @@ lib.attrsets.recursiveUpdate
     virtualisation.spiceUSBRedirection.enable = true;
     networking.firewall.trustedInterfaces = [ "virbr0" ];
     programs.virt-manager.enable = true;
-    programs.adb.enable = true;
     services.samba = {
       enable = true;
       settings = {
@@ -394,7 +377,7 @@ lib.attrsets.recursiveUpdate
 
     # local certificate
     security.pki.certificateFiles = [
-      ./home_root.crt
+      ./root-ca.crt
     ];
 
     # nix
@@ -407,11 +390,12 @@ lib.attrsets.recursiveUpdate
       ];
       trusted-users = [ "lqr471814" ];
       download-buffer-size = "256M";
+      auto-optimise-store = true;
     };
     nix.gc = {
       automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 64d";
+      dates = "monthly";
+      options = "--delete-older-than 30d";
     };
     boot.loader.systemd-boot.configurationLimit = 8;
 
@@ -545,7 +529,7 @@ lib.attrsets.recursiveUpdate
         networking.networkmanager.dispatcherScripts = [
           {
             type = "basic";
-            source = ./wifi-hook.sh;
+            source = "${import ./wifi-hook.nix pkgs}/bin/wifi-hook";
           }
         ];
         networking.firewall.allowedTCPPorts = [ 53317 ];
