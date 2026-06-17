@@ -339,6 +339,7 @@ lib.attrsets.recursiveUpdate
         swtpm.enable = true;
       };
     };
+    systemd.services."user.scope".serviceConfig.Delegate = true;
     virtualisation.spiceUSBRedirection.enable = true;
     networking.firewall.trustedInterfaces = [ "virbr0" ];
     programs.virt-manager.enable = true;
