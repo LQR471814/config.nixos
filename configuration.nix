@@ -339,6 +339,8 @@ lib.attrsets.recursiveUpdate
         swtpm.enable = true;
       };
     };
+    # Delegate=yes must be set for `user.scope` because podman process runs
+    # underneath it and must delegate cgroup for kind
     systemd.services."user.scope".serviceConfig.Delegate = true;
     virtualisation.spiceUSBRedirection.enable = true;
     networking.firewall.trustedInterfaces = [ "virbr0" ];
