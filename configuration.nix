@@ -160,6 +160,8 @@ lib.attrsets.recursiveUpdate
       docker-compose
       android-tools
     ];
+    programs.gnome-disks.enable = true;
+    services.udisks2.enable = true;
 
     fonts = {
       enableDefaultPackages = true;
