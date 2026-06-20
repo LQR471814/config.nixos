@@ -491,19 +491,19 @@ lib.attrsets.recursiveUpdate
         };
 
         # NFS
-        services.nfs.server = {
-          enable = true;
-          exports = ''
-            /backup 192.168.1.10(rw,fsid=0)
-          '';
-        };
-        fileSystems."/backup" = {
-          device = "/dev/disk/by-uuid/667d941b-4154-4150-985f-2e2c8484533a";
-          fsType = "ext4";
-        };
-        systemd.tmpfiles.rules = [
-          "d /backup 0777 root root -"
-        ];
+        # services.nfs.server = {
+        #   enable = true;
+        #   exports = ''
+        #     /backup 192.168.1.10(rw,fsid=0)
+        #   '';
+        # };
+        # fileSystems."/backup" = {
+        #   device = "/dev/disk/by-uuid/667d941b-4154-4150-985f-2e2c8484533a";
+        #   fsType = "ext4";
+        # };
+        # systemd.tmpfiles.rules = [
+        #   "d /backup 0777 root root -"
+        # ];
       }
     else
       {
