@@ -145,6 +145,8 @@ lib.attrsets.recursiveUpdate
       arp-scan
       iftop
       gparted
+      usbutils
+      hwdata
 
       # core gui apps
       alacritty
@@ -315,6 +317,12 @@ lib.attrsets.recursiveUpdate
           }
         ];
       };
+    };
+
+    # daemons
+    services.suwayomi-server = {
+      enable = true;
+      settings.server.port = 7754;
     };
 
     # login
@@ -546,11 +554,7 @@ lib.attrsets.recursiveUpdate
         '';
 
         # Fingerprint reader
-        services.fprintd = {
-          enable = true;
-          tod.enable = true;
-          tod.driver = pkgs.libfprint-2-tod1-goodix-550a;
-        };
+        services.fprintd.enable = true;
         security.pam.services.login.fprintAuth = true;
         security.pam.services.sudo.fprintAuth = true;
         security.pam.services.greetd.fprintAuth = true;
