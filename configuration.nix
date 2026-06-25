@@ -562,5 +562,32 @@ lib.attrsets.recursiveUpdate
         security.pam.services.swaylock.rules.auth.fprintd.order = 100;
         security.pam.services.swaylock.rules.auth.fprintd.settings.control = "sufficient";
         security.pam.services.swaylock.rules.auth.unix.order = 110;
+
+        systemd.services.reset-xhci-after-resume = {
+          description = "Reset xHCI controller after resume for Synaptics fingerprint reader";
+          # this makes service execute after resuming:
+          # - wantedBy queues this job to happen when suspend.target happens
+          # - after tells the job to happen after suspend.target finishes
+          # - suspend.target finishes after waking up
+          wantedBy = [ "suspend.target" ];
+          after = [ "suspend.target" ];
+          serviceConfig.Type = "oneshot";
+          script = ''
+            ${pkgs.systemd}/bin/systemctl stop fprintd.service || true
+
+            # Confirm controller path with:
+            # readlink -f /sys/bus/usb/devices/usb3
+            controller="0000:00:14.0"
+
+            if [ -e "/sys/bus/pci/drivers/xhci_hcd/$controller" ]; then
+              echo "$controller" > /sys/bus/pci/drivers/xhci_hcd/unbind
+              sleep 5
+              echo "$controller" > /sys/bus/pci/drivers/xhci_hcd/bind
+            fi
+
+            sleep 3
+            ${pkgs.systemd}/bin/systemctl start fprintd.service || true
+          '';
+        };
       }
   )
