@@ -573,6 +573,10 @@ lib.attrsets.recursiveUpdate
           after = [ "suspend.target" ];
           serviceConfig.Type = "oneshot";
           script = ''
+            if fprintd-list lqr471814; then
+              exit 0
+            fi
+
             ${pkgs.systemd}/bin/systemctl stop fprintd.service || true
 
             # Confirm controller path with:
