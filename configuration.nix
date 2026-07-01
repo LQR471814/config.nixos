@@ -563,35 +563,15 @@ lib.attrsets.recursiveUpdate
         security.pam.services.swaylock.rules.auth.fprintd.settings.control = "sufficient";
         security.pam.services.swaylock.rules.auth.unix.order = 110;
 
-        systemd.services.reset-xhci-after-resume = {
-          description = "Reset xHCI controller after resume for Synaptics fingerprint reader";
-          # this makes service execute after resuming:
-          # - wantedBy queues this job to happen when suspend.target happens
-          # - after tells the job to happen after suspend.target finishes
-          # - suspend.target finishes after waking up
-          wantedBy = [ "suspend.target" ];
-          after = [ "suspend.target" ];
-          serviceConfig.Type = "oneshot";
-          script = ''
-            if fprintd-list lqr471814; then
-              exit 0
-            fi
-
-            ${pkgs.systemd}/bin/systemctl stop fprintd.service || true
-
-            # Confirm controller path with:
-            # readlink -f /sys/bus/usb/devices/usb3
-            controller="0000:00:14.0"
-
-            if [ -e "/sys/bus/pci/drivers/xhci_hcd/$controller" ]; then
-              echo "$controller" > /sys/bus/pci/drivers/xhci_hcd/unbind
-              sleep 5
-              echo "$controller" > /sys/bus/pci/drivers/xhci_hcd/bind
-            fi
-
-            sleep 3
-            ${pkgs.systemd}/bin/systemctl start fprintd.service || true
-          '';
+        # see: https://wiki.archlinux.org/title/Fprint#Sleeping_while_fprintd_is_still_running_breaks_fprintd
+        systemd.services.kill-printd = {
+          description = "Kill fprintd before sleep";
+          before = [ "sleep.target" ];
+          wantedBy = [ "sleep.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.systemd}/bin/systemctl stop fprintd";
+          };
         };
       }
   )
