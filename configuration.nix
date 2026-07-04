@@ -473,6 +473,12 @@ lib.attrsets.recursiveUpdate
         services.openssh.enable = true;
 
         networking = {
+          nameservers = [
+            "1.1.1.1"
+            "1.0.0.1"
+            "8.8.8.8"
+          ];
+
           interfaces.enp5s0 = {
             wakeOnLan.enable = true;
             ipv4.addresses = [
@@ -482,10 +488,12 @@ lib.attrsets.recursiveUpdate
               }
             ];
           };
+
           defaultGateway = {
             address = "192.168.1.254";
             interface = "enp5s0";
           };
+
           firewall = {
             enable = true;
             allowedUDPPorts = [ 9 ];
