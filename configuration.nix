@@ -89,6 +89,9 @@ lib.attrsets.recursiveUpdate
 
     # programs and packages
 
+    # better nixos cli
+    programs.nixos-cli.enable = true;
+
     # packages installed in system profile
     nixpkgs.overlays = [
       (import ./overlays.nix)
@@ -388,9 +391,11 @@ lib.attrsets.recursiveUpdate
     nix.settings = {
       substituters = [
         "https://cache.nixos-cuda.org"
+        "https://watersucks.cachix.org"
       ];
       trusted-public-keys = [
         "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
+        "watersucks.cachix.org-1:6gadPC5R8iLWQ3EUtfu3GFrVY7X6I4Fwz/ihW25Jbv8="
       ];
       trusted-users = [ "lqr471814" ];
       download-buffer-size = "256M";
