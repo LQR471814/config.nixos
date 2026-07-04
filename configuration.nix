@@ -147,6 +147,8 @@ lib.attrsets.recursiveUpdate
       gparted
       usbutils
       hwdata
+      ethtool
+      wakeonlan
 
       # core gui apps
       alacritty
@@ -479,24 +481,25 @@ lib.attrsets.recursiveUpdate
         ];
 
         # networking (manual configuration)
-        networking.firewall.enable = false;
         services.openssh.enable = true;
 
-        networking.networkmanager = {
-          enable = true;
-          ensureProfiles.profiles = {
-            "StaticWired" = {
-              connection = {
-                id = "StaticWired";
-                type = "ethernet";
-                interface-name = "enp4s0";
-                autoconnect = true;
-              };
-              ipv4 = {
-                method = "manual";
-                address1 = "192.168.20.2/24";
-              };
-            };
+        networking = {
+          interfaces.enp5s0 = {
+            wakeOnLan.enable = true;
+            ipv4.addresses = [
+              {
+                address = "192.168.1.13";
+                prefixLength = 24;
+              }
+            ];
+          };
+          defaultGateway = {
+            address = "192.168.1.254";
+            interface = "enp5s0";
+          };
+          firewall = {
+            enable = true;
+            allowedUDPPorts = [ 9 ];
           };
         };
 
