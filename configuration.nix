@@ -62,17 +62,6 @@ lib.attrsets.recursiveUpdate
     services.libinput.enable = true;
 
     # network
-    networking.networkmanager.enable = true;
-    services.resolved = {
-      enable = true;
-      extraConfig = ''
-        [Resolve]
-        DNS=
-        FallbackDNS=192.168.1.10
-        DNSOverTLS=no
-        DNSSEC=no
-      '';
-    };
 
     # user accounts
     users.groups.wireshark = { };
@@ -500,6 +489,7 @@ lib.attrsets.recursiveUpdate
           firewall = {
             enable = true;
             allowedUDPPorts = [ 9 ];
+            allowedTCPPorts = [ 8080 ];
           };
         };
 
@@ -542,6 +532,17 @@ lib.attrsets.recursiveUpdate
         ];
 
         # networking
+        networking.networkmanager.enable = true;
+        services.resolved = {
+          enable = true;
+          extraConfig = ''
+            [Resolve]
+            DNS=
+            FallbackDNS=192.168.1.10
+            DNSOverTLS=no
+            DNSSEC=no
+          '';
+        };
         networking.networkmanager.dispatcherScripts = [
           {
             type = "basic";
