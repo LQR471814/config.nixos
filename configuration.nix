@@ -585,25 +585,29 @@ lib.attrsets.recursiveUpdate
           ip saddr 192.168.122.0/24 udp dport { 137, 138 } accept
         '';
 
-        # Fingerprint reader
-        services.fprintd.enable = true;
-        security.pam.services.login.fprintAuth = true;
-        security.pam.services.sudo.fprintAuth = true;
-        security.pam.services.greetd.fprintAuth = true;
-        security.pam.services.swaylock.fprintAuth = true;
-        security.pam.services.swaylock.rules.auth.fprintd.order = 100;
-        security.pam.services.swaylock.rules.auth.fprintd.settings.control = "sufficient";
-        security.pam.services.swaylock.rules.auth.unix.order = 110;
+        # # Fingerprint reader
+        # services.fprintd.enable = true;
+        # security.pam.services.login.fprintAuth = true;
+        # security.pam.services.sudo.fprintAuth = true;
+        # security.pam.services.greetd.fprintAuth = true;
+        # security.pam.services.swaylock.fprintAuth = true;
+        # security.pam.services.swaylock.rules.auth.fprintd.order = 100;
+        # security.pam.services.swaylock.rules.auth.fprintd.settings.control = "sufficient";
+        # security.pam.services.swaylock.rules.auth.unix.order = 110;
 
-        # see: https://wiki.archlinux.org/title/Fprint#Sleeping_while_fprintd_is_still_running_breaks_fprintd
-        systemd.services.kill-printd = {
-          description = "Kill fprintd before sleep";
-          before = [ "sleep.target" ];
-          wantedBy = [ "sleep.target" ];
-          serviceConfig = {
-            Type = "oneshot";
-            ExecStart = "${pkgs.systemd}/bin/systemctl stop fprintd";
-          };
-        };
+        # services.udev.extraRules = ''
+        #   ACTION=="add", SUBSYSTEM=="usb", DRIVERS=="usb", ATTRS{idVendor}=="06cb", ATTRS{idProduct}=="00f9", ATTR{power/persist}="1", RUN="${pkgs.busybox}/bin/chmod 444 %S%p/../power/persist"
+        # '';
+
+        # # see: https://wiki.archlinux.org/title/Fprint#Sleeping_while_fprintd_is_still_running_breaks_fprintd
+        # systemd.services.kill-printd = {
+        #   description = "Kill fprintd before sleep";
+        #   before = [ "sleep.target" ];
+        #   wantedBy = [ "sleep.target" ];
+        #   serviceConfig = {
+        #     Type = "oneshot";
+        #     ExecStart = "${pkgs.systemd}/bin/systemctl stop fprintd";
+        #   };
+        # };
       }
   )
