@@ -215,17 +215,6 @@ lib.attrsets.recursiveUpdate
       extraPackages = with pkgs; [ swaylock ];
     };
 
-    services.autosuspend = {
-      enable = true;
-      checks = {
-        Live = {
-          class = "ExternalCommand";
-          enabled = true;
-          command = "${pkgs.nushell}/bin/nu ${./live.nu}";
-        };
-      };
-    };
-
     # bluetooth
     hardware.bluetooth.enable = true;
     hardware.bluetooth.powerOnBoot = true;
@@ -518,6 +507,17 @@ lib.attrsets.recursiveUpdate
             enable = true;
             allowedUDPPorts = [ 9 ];
             allowedTCPPorts = [ 8080 ];
+          };
+        };
+
+        services.autosuspend = {
+          enable = true;
+          checks = {
+            Live = {
+              class = "ExternalCommand";
+              enabled = true;
+              command = "${pkgs.nushell}/bin/nu ${./live.nu}";
+            };
           };
         };
 
