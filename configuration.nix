@@ -215,6 +215,17 @@ lib.attrsets.recursiveUpdate
       extraPackages = with pkgs; [ swaylock ];
     };
 
+    services.autosuspend = {
+      enable = true;
+      checks = {
+        Live = {
+          class = "ExternalCommand";
+          enabled = true;
+          command = "${pkgs.nushell}/bin/nu ${./live.nu}";
+        };
+      };
+    };
+
     # bluetooth
     hardware.bluetooth.enable = true;
     hardware.bluetooth.powerOnBoot = true;
