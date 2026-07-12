@@ -22,9 +22,11 @@ def "has user session" []: nothing -> bool {
 }
 
 def "has tmux session" []: nothing -> bool {
-  let result = (do --ignore-errors { tmux list-sessions } | complete)
+  let result = do --ignore-errors {
+    tmux list-sessions | complete
+  }
 
-  if $result.exit_code != 0 {
+  if $result.exit_code? != 0 {
     return false
   }
 
