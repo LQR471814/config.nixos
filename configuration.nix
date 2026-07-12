@@ -113,7 +113,7 @@ lib.attrsets.recursiveUpdate
       libsForQt5.qt5.qtwayland
       libdrm
       river-bedload
-      xorg.xrdb
+      xrdb
       at-spi2-core
       accerciser
 
@@ -568,13 +568,14 @@ lib.attrsets.recursiveUpdate
         networking.networkmanager.enable = true;
         services.resolved = {
           enable = true;
-          extraConfig = ''
-            [Resolve]
-            DNS=
-            FallbackDNS=192.168.1.10
-            DNSOverTLS=no
-            DNSSEC=no
-          '';
+          settings = {
+            Resolve = {
+              DNS = "";
+              FallbackDNS = [ "192.168.1.10" ];
+              DNSOverTLS = false;
+              DNSSEC = false;
+            };
+          };
         };
         networking.networkmanager.dispatcherScripts = [
           {
