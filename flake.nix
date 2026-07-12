@@ -3,10 +3,18 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-25.11";
     unstable.url = "nixpkgs/nixos-unstable";
-    nixos-cli.url = "github:nix-community/nixos-cli";
+    nixos-cli = {
+      url = "github:nix-community/nixos-cli";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
-    inputs@{ nixpkgs, unstable, nixos-cli, ... }:
+    inputs@{
+      nixpkgs,
+      unstable,
+      nixos-cli,
+      ...
+    }:
     let
       IS_DESKTOP = builtins.pathExists ./DESKTOP;
       hostname = if IS_DESKTOP then "lqr471814-desktop" else "lqr471814-laptop";
