@@ -513,6 +513,11 @@ lib.attrsets.recursiveUpdate
         services.autosuspend = {
           enable = true;
           checks = {
+            SSH = {
+              class = "ActiveConnection";
+              enabled = true;
+              ports = 22;
+            };
             Live = {
               class = "ExternalCommand";
               enabled = true;
