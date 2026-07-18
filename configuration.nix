@@ -468,6 +468,9 @@ lib.attrsets.recursiveUpdate
           nvidiaSettings = true;
           package = config.boot.kernelPackages.nvidiaPackages.beta;
         };
+        boot.extraModprobeConfig = ''
+          options nvidia NVreg_TemporaryFilePath=/var/tmp
+        '';
 
         # fan module
         boot.kernelModules = [
@@ -504,7 +507,7 @@ lib.attrsets.recursiveUpdate
           firewall = {
             enable = true;
             allowedUDPPorts = [ 9 ];
-            allowedTCPPorts = [ 8080 ];
+            allowedTCPPorts = [ 3478 8080 8188 ];
           };
         };
 
