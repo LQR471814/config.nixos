@@ -1,1 +1,1 @@
-cp /etc/nixos/* .
+cp -r /etc/nixos/* .
