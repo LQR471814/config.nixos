@@ -17,15 +17,13 @@
     }:
     let
       IS_DESKTOP = builtins.pathExists ./DESKTOP;
+
       hostname = if IS_DESKTOP then "lqr471814-desktop" else "lqr471814-laptop";
       system = "x86_64-linux";
       unstablePkgs = unstable.legacyPackages.${system};
-      ctx = {
-        inherit unstablePkgs;
-        inherit system;
-        inherit IS_DESKTOP;
-      };
+
       modules = [
+        ./configuration.nix
         ./cfg/hardware.nix
         ./cfg/audio.nix
         ./cfg/bluetooth.nix
@@ -43,6 +41,8 @@
         ./cfg/users.nix
         ./cfg/virt.nix
         ./cfg/wireshark.nix
+
+        nixos-cli.nixosModules.nixos-cli
       ]
       ++ (
         if IS_DESKTOP then
@@ -63,16 +63,10 @@
     in
     {
       nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {
-        inherit system;
+        inherit system modules;
         specialArgs = {
           inherit inputs system unstablePkgs IS_DESKTOP;
         };
-        modules = [
-          (import ./configuration.nix)
-          nixos-cli.nixosModules.nixos-cli
-        ]
-        ++ modules;
       };
-      # test = import ./wifi-hook.nix unstablePkgs;
     };
 }
