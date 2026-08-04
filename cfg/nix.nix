@@ -8,10 +8,12 @@ _: {
     substituters = [
       "https://cache.nixos-cuda.org"
       "https://watersucks.cachix.org"
+      "https://nixos-raspberrypi.cachix.org"
     ];
     trusted-public-keys = [
       "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
       "watersucks.cachix.org-1:6gadPC5R8iLWQ3EUtfu3GFrVY7X6I4Fwz/ihW25Jbv8="
+      "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI="
     ];
     trusted-users = [ "lqr471814" ];
     download-buffer-size = "256M";
