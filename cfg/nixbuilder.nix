@@ -8,8 +8,8 @@ _: {
     group = "nixbuild";
     useDefaultShell = true;
 
-    openssh.authorizedKeys.keyFiles = [
-      ../nix-builder.pub
+    openssh.authorizedKeys.keys = [
+      (builtins.readFile ../nix-builder.pub)
     ];
   };
 
