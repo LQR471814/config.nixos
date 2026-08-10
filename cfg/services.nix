@@ -1,4 +1,6 @@
 _: {
+  services.geoclue2.enable = true;
+
   services.searx = {
     enable = true;
     settings = {
