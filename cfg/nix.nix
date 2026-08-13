@@ -29,4 +29,26 @@ _: {
     options = "--delete-older-than 30d";
   };
   boot.loader.systemd-boot.configurationLimit = 8;
+
+  # remote builder
+  nix.distributedBuilds = true;
+  nix.settings.builders-use-substitutes = true;
+  nix.buildMachines = [
+    {
+      hostName = "192.168.1.121";
+      sshUser = "nixbuild";
+      sshKey = "/root/.ssh/mac_ed25519";
+
+      system = "aarch64-linux";
+
+      maxJobs = 8;
+      speedFactor = 1;
+
+      supportedFeatures = [
+        "big-parallel"
+        "kvm"
+        "nixos-test"
+      ];
+    }
+  ];
 }
