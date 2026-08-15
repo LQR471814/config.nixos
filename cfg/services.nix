@@ -29,4 +29,6 @@ _: {
     enable = true;
     settings.server.port = 7754;
   };
+
+  services.automatic-timezoned.enable = true;
 }

@@ -1,7 +1,4 @@
 _: {
-  # time zone.
-  time.timeZone = "America/Los_Angeles";
-
   # language
   i18n.defaultLocale = "en_US.UTF-8";
 
