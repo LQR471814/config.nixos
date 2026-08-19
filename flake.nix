@@ -1,6 +1,7 @@
 {
   description = "NixOS configuration";
   inputs = {
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
     nixpkgs.url = "nixpkgs/nixos-26.05";
     unstable.url = "nixpkgs/nixos-unstable";
     nixos-cli = {
@@ -13,6 +14,7 @@
       nixpkgs,
       unstable,
       nixos-cli,
+      determinate,
       ...
     }:
     let
@@ -65,6 +67,7 @@
         ./cfg/wireshark.nix
 
         nixos-cli.nixosModules.nixos-cli
+        determinate.nixosModules.default
       ]
       ++ (
         if IS_DESKTOP then
