@@ -48,6 +48,7 @@
     hwdata
     ethtool
     wakeonlan
+    saleae-logic-2
 
     # core gui apps
     alacritty

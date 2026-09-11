@@ -65,6 +65,7 @@
         ./cfg/services.nix
         ./cfg/virt.nix
         ./cfg/wireshark.nix
+        ./cfg/udev.nix
 
         nixos-cli.nixosModules.nixos-cli
         determinate.nixosModules.default
