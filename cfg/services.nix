@@ -2,7 +2,7 @@ _: {
   services.geoclue2.enable = true;
 
   services.searx = {
-    enable = true;
+    enable = false;
     settings = {
       server.port = 8585;
       server.bind_address = "127.0.0.1";
