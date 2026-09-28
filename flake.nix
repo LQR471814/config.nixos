@@ -2,8 +2,8 @@
   description = "NixOS configuration";
   inputs = {
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
-    nixpkgs.url = "nixpkgs/nixos-26.05";
-    unstable.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-cli = {
       url = "github:nix-community/nixos-cli";
       inputs.nixpkgs.follows = "nixpkgs";
