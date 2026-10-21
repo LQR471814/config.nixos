@@ -29,7 +29,7 @@ let
           ${wg-quick} down $CONFIG
         }
 
-        print $action $conn
+        {intf: $intf, action: $action, conn: $conn} | save -f "/home/lqr471814/.vpn-hook-params.json"
 
         match $action {
           "connectivity-change" => {
