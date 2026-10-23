@@ -1,4 +1,4 @@
-_: {
+{ pkgs, ... }: {
   # language
   i18n.defaultLocale = "en_US.UTF-8";
 
@@ -31,4 +31,10 @@ _: {
     "emSign Root CA - C1"
     "emSign ECC Root CA - C3"
   ];
+
+  services.ananicy = {
+    enable = true;
+    package = pkgs.ananicy-cpp;
+    rulesProvider = pkgs.ananicy-rules-cachyos;
+  };
 }
