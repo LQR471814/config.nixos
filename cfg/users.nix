@@ -20,6 +20,7 @@
         "adbusers"
         "dialout"
         "podman"
+        "networkmanager"
       ]; # enable sudo for user
       shell = unstablePkgs.nushell;
     };
