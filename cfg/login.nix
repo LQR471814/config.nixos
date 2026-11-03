@@ -1,4 +1,9 @@
-{ pkgs, IS_DESKTOP, ... }:
+{
+  pkgs,
+  lib,
+  IS_DESKTOP,
+  ...
+}:
 let
   inherit (pkgs)
     tuigreet
@@ -42,12 +47,12 @@ in
       settings.default_session = {
         user = "greeter";
         command = ''
-          ${tuigreet}/bin/tuigreet \
+          ${lib.getExe' tuigreet "tuigreet"} \
             --time \
             --remember \
             --asterisks \
             --user-menu \
-            --cmd ${river-launcher}/bin/river-launcher
+            --cmd ${lib.getExe' river-launcher "river-launcher"}
         '';
       };
     };

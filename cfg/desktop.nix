@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   inherit (pkgs)
     at-spi2-core
@@ -24,7 +24,7 @@ in
   systemd.user.services.dbus-update-activation-environment = {
     enable = true;
     script = ''
-      ${dbus}/bin/dbus-update-activation-environment --systemd --all
+      ${lib.getExe' dbus "dbus-update-activation-environment"} --systemd --all
     '';
   };
 

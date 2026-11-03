@@ -1,12 +1,12 @@
 pkgs:
 with pkgs;
 let
-  nmcli = "${networkmanager}/bin/nmcli";
-  wg-quick = "${wireguard-tools}/bin/wg-quick";
+  nmcli = lib.getExe' networkmanager "nmcli";
+  wg-quick = lib.getExe' wireguard-tools "wg-quick";
   script = writeTextFile {
     name = "wifi-hook.nu";
     text = ''
-      #!${nushell}/bin/nu
+      #!${lib.getExe' nushell "nu"}
 
       def main [args: string] {
         let args = $args | from json

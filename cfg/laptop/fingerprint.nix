@@ -1,6 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   inherit (pkgs)
+    busybox
     systemd
     ;
 in
@@ -24,7 +25,7 @@ in
   };
 
   services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="usb", DRIVERS=="usb", ATTRS{idVendor}=="06cb", ATTRS{idProduct}=="00f9", ATTR{power/persist}="1", RUN="${pkgs.busybox}/bin/chmod 444 %S%p/../power/persist"
+    ACTION=="add", SUBSYSTEM=="usb", DRIVERS=="usb", ATTRS{idVendor}=="06cb", ATTRS{idProduct}=="00f9", ATTR{power/persist}="1", RUN="${lib.getExe' busybox "chmod"} 444 %S%p/../power/persist"
   '';
 
   # see: https://wiki.archlinux.org/title/Fprint#Sleeping_while_fprintd_is_still_running_breaks_fprintd
@@ -34,7 +35,7 @@ in
     wantedBy = [ "sleep.target" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${systemd}/bin/systemctl stop fprintd";
+      ExecStart = "${lib.getExe' systemd "systemctl"} stop fprintd";
     };
   };
 }

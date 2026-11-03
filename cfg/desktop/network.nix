@@ -50,7 +50,7 @@ in
       Live = {
         class = "ExternalCommand";
         enabled = true;
-        command = "${nushell}/bin/nu ${./live.nu}";
+        command = "${pkgs.lib.getExe' nushell "nu"} ${./live.nu}";
       };
     };
   };
