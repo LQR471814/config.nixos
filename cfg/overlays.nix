@@ -28,13 +28,13 @@ in
 {
   sandbar = super.stdenv.mkDerivation {
     name = "sandbar";
-    version = "0.2";
+    version = "0.1";
 
     src = self.fetchFromGitHub {
       owner = "kolunmi";
       repo = "sandbar";
-      rev = "e64a8b788d086cdf4ec44b51e62bdc7b6b5f8165";
-      hash = "sha256-dNYYlm5CEdnvLjskrPJgquptIQpYgU+gxOu+bt+7sbw=";
+      rev = "51887cee0a2cea8cf0aba2d81442b75403485e1c";
+      hash = "sha256-lUiDdmcu/CYe8hEWoUX+bM1cDy/590TvRgfLO6Ry6Vk=";
     };
 
     strictDeps = true;
