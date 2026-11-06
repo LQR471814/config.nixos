@@ -57,6 +57,7 @@
         ./cfg/desktop.nix
         ./cfg/disks.nix
         ./cfg/fonts.nix
+        ./cfg/hardening.nix
         ./cfg/input.nix
         ./cfg/login.nix
         ./cfg/nix.nix
